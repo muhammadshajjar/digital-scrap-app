@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
@@ -6,10 +7,23 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
-import { useEffect } from "react";
 import { useColorScheme } from "react-native";
 
 import { AuthProvider, useAuth } from "../context/auth-context";
+
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "react-query";
+import { useAuthUser } from "@react-query-firebase/auth";
+
+import {auth} from '../lib/firebase/config'
+
+import { router } from "expo-router";
+
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -26,8 +40,11 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   // const { user } = useAuth();
+  // Create a client
+  const queryClient = new QueryClient();
 
-  const [loaded,error] = useFonts({
+
+  const [loaded, error] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
     "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.ttf"),
     "Montserrat-Regular": require("../assets/fonts/Montserrat-Regular.ttf"),
@@ -58,11 +75,27 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <QueryClientProvider client={queryClient} contextSharing={true}>
+      <RootLayoutNav />
+    </QueryClientProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
+
+  // const user = useAuthUser(["user"], auth);
+
+
+  // useEffect(()=>{
+  //   if(user){
+  //     router.push("/customers/selling");
+  //   }else{
+  //     router.push("/");
+  //   }
+  // },[user])
+
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

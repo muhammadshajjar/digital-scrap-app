@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 
 import { Image } from "expo-image";
@@ -19,14 +20,47 @@ import { COLORS } from "../../constants/Colors";
 import GoogleAuth from "../../components/ui/GoogleAuth";
 import AuthInput from "../../components/ui/AuthInput";
 
+import { auth } from "../../lib/firebase/config";
+import {
+  useAuthSignInWithEmailAndPassword,
+  useAuthSendPasswordResetEmail,
+} from "@react-query-firebase/auth";
+
+
 const Login = () => {
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+  const mutation = useAuthSignInWithEmailAndPassword(auth, {
+    onError(error) {
+      console.log(error.message);
+    },
+    onSuccess() {
+      router.push("/customers/selling");
+    },
+  });
+
+  const forgotPasswordMutation = useAuthSendPasswordResetEmail(auth, {
+    onError(error) {
+      console.log(error.message);
+    },
+    onSuccess() {
+      Alert.alert("Password reset email sent successfully");
+    },
+  });
+
   const onSubmit = (data) => {
-    router.push("/customers/selling");
+    const { email, password } = data;
+    mutation.mutate({ email, password });
+  };
+
+  const forgotPasswordHandler = async () => {
+    forgotPasswordMutation.mutate({
+      email: "muhammadshajjar99@gmail.com",
+    });
   };
 
   return (
@@ -100,7 +134,10 @@ const Login = () => {
           {errors.password && (
             <Text style={styles.feedbackTxt}>Minimum Length must be 6!</Text>
           )}
-          <TouchableOpacity style={{ alignSelf: "flex-end", marginTop: 10 }}>
+          <TouchableOpacity
+            style={{ alignSelf: "flex-end", marginTop: 10 }}
+            onPress={forgotPasswordHandler}
+          >
             <Text
               style={{
                 fontSize: 15,
@@ -108,11 +145,14 @@ const Login = () => {
                 fontFamily: "Montserrat-SemiBold",
               }}
             >
-              Forgot?
+             {forgotPasswordMutation.isLoading ? "Sending..." : "Forgot?"}
+
             </Text>
           </TouchableOpacity>
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.btn}>
-            <Text style={styles.btnTxt}>Login</Text>
+            <Text style={styles.btnTxt}>
+              {mutation?.isLoading ? "...." : "Login"}
+            </Text>
           </Pressable>
           <Text style={styles.alternativeTxt}>Or, login with...</Text>
 

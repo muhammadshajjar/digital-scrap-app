@@ -11,9 +11,12 @@ import { AntDesign } from "@expo/vector-icons";
 import { COLORS } from "../../constants/Colors";
 import GoogleAuth from "../../components/ui/GoogleAuth";
 import AuthInput from "../../components/ui/AuthInput";
+import { auth } from "../../lib/firebase/config";
+import { useAuthCreateUserWithEmailAndPassword } from "@react-query-firebase/auth";
 
 
 const Signup = () => {
+
   const {
     control,
     handleSubmit,
@@ -23,11 +26,20 @@ const Signup = () => {
 
   const password = watch("password", "");
 
-  const onSubmit = (data) => {
-    console.log(data);
-    router.push("/login");
-  };
+  const mutation = useAuthCreateUserWithEmailAndPassword(auth, {
+    onError(error) {
+      console.log(error.message);
+    },
+    onSuccess(){
+      router.push("/login");
+    }
+  });
 
+  const onSubmit = (data) => {
+    const {email, password} = data;
+      mutation.mutate({ email, password });
+
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.form}>
@@ -35,7 +47,6 @@ const Signup = () => {
         <ScrollView>
           <GoogleAuth />
           <Text style={styles.alternativeTxt}>Or, register with email...</Text>
-
           <Controller
             control={control}
             rules={{
@@ -163,7 +174,7 @@ const Signup = () => {
           )}
 
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.btn}>
-            <Text style={styles.btnTxt}>SignUp</Text>
+          <Text style={styles.btnTxt}>{mutation?.isLoading ? "creating..." : "Sign Up"}</Text>
           </Pressable>
 
           <View style={styles.accountContainer}>

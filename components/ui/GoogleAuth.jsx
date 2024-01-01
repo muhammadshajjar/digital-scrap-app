@@ -1,18 +1,34 @@
-import { Pressable, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Alert } from "react-native";
 import React from "react";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/Colors";
 
-const GoogleAuth = () => {
+import { auth } from "../../lib/firebase/config";
+import { useAuthSignInWithRedirect } from "@react-query-firebase/auth";
 
+import { GoogleAuthProvider } from "firebase/auth";
+
+const GoogleAuth = () => {
+  const mutation = useAuthSignInWithRedirect(auth, {
+    onError(error) {
+      console.log("Error", error);
+      Alert.alert(error.message);
+    },
+    onSuccess() {
+      router.push("/customers/selling");
+    },
+  });
   const authWithGoogleHandler = () => {
-    console.log("authWithGoogleHandler");
+    mutation.mutate({ provider: new GoogleAuthProvider() });
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.horizontalLine} />
-      <TouchableOpacity onPress={authWithGoogleHandler} style={styles.btnContainer}>
+      <TouchableOpacity
+        onPress={authWithGoogleHandler}
+        style={styles.btnContainer}
+      >
         <Image
           source={require("../../assets/images/Googlelogo.png")}
           placeholder="google logo"
