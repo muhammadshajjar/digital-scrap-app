@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -20,49 +21,51 @@ import { COLORS } from "../../constants/Colors";
 import GoogleAuth from "../../components/ui/GoogleAuth";
 import AuthInput from "../../components/ui/AuthInput";
 
-import { auth } from "../../lib/firebase/config";
-import {
-  useAuthSignInWithEmailAndPassword,
-  useAuthSendPasswordResetEmail,
-} from "@react-query-firebase/auth";
-
+import auth from "@react-native-firebase/auth";
 
 const Login = () => {
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    watch,
+    formState: { errors, isSubmitting },
   } = useForm();
 
-  const mutation = useAuthSignInWithEmailAndPassword(auth, {
-    onError(error) {
-      console.log(error.message);
-    },
-    onSuccess() {
-      router.push("/customers/selling");
-    },
-  });
+  const userEmail = watch("email", "");
 
-  const forgotPasswordMutation = useAuthSendPasswordResetEmail(auth, {
-    onError(error) {
-      console.log(error.message);
-    },
-    onSuccess() {
-      Alert.alert("Password reset email sent successfully");
-    },
-  });
-
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const { email, password } = data;
-    mutation.mutate({ email, password });
+    return auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        user && router.push("/customers");
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        Alert.alert("Error", errorMessage);
+      });
   };
 
   const forgotPasswordHandler = async () => {
-    forgotPasswordMutation.mutate({
-      email: "muhammadshajjar99@gmail.com",
-    });
+    if (userEmail.length > 0) {
+      auth()
+        .sendPasswordResetEmail(userEmail)
+        .then(() => {
+          Alert.alert("Success", "Password reset email sent successfully :)");
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          Alert.alert("Error", errorMessage);
+        })
+        .finally(() => {
+          setForgotPasswordLoading(false);
+        });
+    } else {
+      Alert.alert("Error", "Please enter your email again :(");
+    }
   };
-
   return (
     <>
       <View style={styles.imgContainer}>
@@ -114,20 +117,22 @@ const Login = () => {
               minLength: 6,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <AuthInput
-                placeholder="Password"
-                icon={
-                  <Ionicons
-                    name="ios-lock-closed-outline"
-                    size={20}
-                    color="#666"
-                  />
-                }
-                inputType="password"
-                onBlur={onBlur}
-                onChange={onChange}
-                value={value}
-              />
+              <>
+                <AuthInput
+                  placeholder="Password"
+                  icon={
+                    <Ionicons
+                      name="ios-lock-closed-outline"
+                      size={20}
+                      color="#666"
+                    />
+                  }
+                  inputType={"password"}
+                  onBlur={onBlur}
+                  onChange={onChange}
+                  value={value}
+                />
+              </>
             )}
             name="password"
           />
@@ -145,13 +150,12 @@ const Login = () => {
                 fontFamily: "Montserrat-SemiBold",
               }}
             >
-             {forgotPasswordMutation.isLoading ? "Sending..." : "Forgot?"}
-
+              {forgotPasswordLoading ? "seding..." : "Forgot?"}
             </Text>
           </TouchableOpacity>
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.btn}>
             <Text style={styles.btnTxt}>
-              {mutation?.isLoading ? "...." : "Login"}
+              {isSubmitting ? "Loading.." : "Login"}
             </Text>
           </Pressable>
           <Text style={styles.alternativeTxt}>Or, login with...</Text>
@@ -179,7 +183,7 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     //  flex: 3,
-    height: 360,
+    height: 390,
     width: "100%",
   },
   img: {

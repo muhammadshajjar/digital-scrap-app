@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1018730329907",
+    "project_id": "digital-scrap-dc471",
+    "storage_bucket": "digital-scrap-dc471.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1018730329907:android:2024d2f63e17030e947046",
+        "android_client_info": {
+          "package_name": "com.shajjar99.digitalscrapapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1018730329907-7d91lkguomqcpaggfn866ma1gnv5m0ki.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1s8sqS1lg9wnaKH5gXYcocMeYRnoabHU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1018730329907-7d91lkguomqcpaggfn866ma1gnv5m0ki.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1018730329907-di3948245mh6titsus68l8euant4i35q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.shajjar99.digital-scrap-app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

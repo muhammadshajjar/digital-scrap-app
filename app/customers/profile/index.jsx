@@ -4,19 +4,13 @@ import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
-import { useAuthUser } from "@react-query-firebase/auth";
-
-import { auth } from "../../../lib/firebase/config";
-
 const ProfileHome = () => {
 
-  const user = useAuthUser(["user"], auth);
-  console.log(user?.data?.email);
 
   return (
     <SafeAreaView>
       <View>
-        <Text>Profile HOme, Welcom {user?.data?.email}</Text>
+        <Text>Profile HOme</Text>
         <Link href="/customers/profile/schedules">Schedules</Link>
         <Link href="/customers/profile/smarttrashbin">Smart Trashbins</Link>
         <Link href="/customers/profile/helpcenter">Help Center</Link>

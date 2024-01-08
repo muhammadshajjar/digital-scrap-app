@@ -1,17 +1,19 @@
-import { View, TextInput } from "react-native";
-import React from "react";
+import { View, TextInput, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 import { COLORS } from "../../constants/Colors";
 
 const AuthInput = ({
   placeholder,
-  keyboardType,
   icon,
   inputType,
   onBlur,
   onChange,
   value,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <View
       style={{
@@ -24,17 +26,25 @@ const AuthInput = ({
       }}
     >
       {icon}
-
       <TextInput
         placeholder={placeholder}
         onBlur={onBlur}
         onChangeText={onChange}
         value={value}
-        secureTextEntry={inputType === "password"}
+        secureTextEntry={inputType === "password" ? !showPassword : false}
         keyboardType="default"
         style={{ flex: 1, marginLeft: 6, fontSize: 15 }}
         autoCapitalize="none"
       />
+      {inputType === "password" && (
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? "ios-eye" : "ios-eye-off"}
+            size={20}
+            color="#666"
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

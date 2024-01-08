@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+// import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
   DefaultTheme,
@@ -9,21 +9,20 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useColorScheme } from "react-native";
 
-import { AuthProvider, useAuth } from "../context/auth-context";
+import { AuthProvider } from "../context/auth-context";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from "react-query";
-import { useAuthUser } from "@react-query-firebase/auth";
+// import {
+//   useQuery,
+//   useMutation,
+//   useQueryClient,
+//   QueryClient,
+//   QueryClientProvider,
+// } from "react-query";
+// import { useAuthUser } from "@react-query-firebase/auth";
 
-import {auth} from '../lib/firebase/config'
+// import { auth } from "../lib/firebase/config";
 
-import { router } from "expo-router";
-
+// import { router } from "expo-router";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -41,8 +40,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   // const { user } = useAuth();
   // Create a client
-  const queryClient = new QueryClient();
-
+  // const queryClient = new QueryClient();
 
   const [loaded, error] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
@@ -76,9 +74,10 @@ export default function RootLayout() {
   }
 
   return (
-    <QueryClientProvider client={queryClient} contextSharing={true}>
-      <RootLayoutNav />
-    </QueryClientProvider>
+    // <QueryClientProvider client={queryClient} contextSharing={true}>
+
+    // </QueryClientProvider>
+    <RootLayoutNav />
   );
 }
 
@@ -87,7 +86,6 @@ function RootLayoutNav() {
 
   // const user = useAuthUser(["user"], auth);
 
-
   // useEffect(()=>{
   //   if(user){
   //     router.push("/customers/selling");
@@ -95,7 +93,6 @@ function RootLayoutNav() {
   //     router.push("/");
   //   }
   // },[user])
-
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

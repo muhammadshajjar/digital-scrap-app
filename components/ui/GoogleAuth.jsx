@@ -1,43 +1,67 @@
-import { StyleSheet, TouchableOpacity, View, Alert } from "react-native";
-import React from "react";
+import { StyleSheet, TouchableOpacity, View, Alert, Text } from "react-native";
+import React, { useState } from "react";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/Colors";
+import { router } from "expo-router";
 
-import { auth } from "../../lib/firebase/config";
-import { useAuthSignInWithRedirect } from "@react-query-firebase/auth";
+import auth from "@react-native-firebase/auth";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-import { GoogleAuthProvider } from "firebase/auth";
+GoogleSignin.configure({
+  webClientId:
+    "1018730329907-7d91lkguomqcpaggfn866ma1gnv5m0ki.apps.googleusercontent.com",
+});
 
 const GoogleAuth = () => {
-  const mutation = useAuthSignInWithRedirect(auth, {
-    onError(error) {
-      console.log("Error", error);
-      Alert.alert(error.message);
-    },
-    onSuccess() {
-      router.push("/customers/selling");
-    },
-  });
-  const authWithGoogleHandler = () => {
-    mutation.mutate({ provider: new GoogleAuthProvider() });
+  const [authenticating, setAuthenticating] = useState(false);
+
+  const googleSigninHandler = async () => {
+    setAuthenticating(true);
+    try {
+      // Check if your device supports Google Play
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+      // Get the users ID token
+      const { idToken } = await GoogleSignin.signIn();
+
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+      // Sign-in the user with the credential
+      const result = await auth().signInWithCredential(googleCredential);
+
+      console.log(result);
+      setAuthenticating(false);
+      router.push("/customers");
+    } catch (e) {
+      console.error(e.message);
+      Alert.alert(e.message);
+      setAuthenticating(false);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.horizontalLine} />
-      <TouchableOpacity
-        onPress={authWithGoogleHandler}
-        style={styles.btnContainer}
-      >
-        <Image
-          source={require("../../assets/images/Googlelogo.png")}
-          placeholder="google logo"
-          contentFit="contain"
-          style={styles.img}
-        ></Image>
-      </TouchableOpacity>
-      <View style={styles.horizontalLine} />
-    </View>
+    <>
+      <View style={styles.container}>
+        <View style={styles.horizontalLine} />
+        <TouchableOpacity
+          onPress={googleSigninHandler}
+          style={styles.btnContainer}
+        >
+          <Image
+            source={require("../../assets/images/Googlelogo.png")}
+            placeholder="google logo"
+            contentFit="contain"
+            style={styles.img}
+          ></Image>
+        </TouchableOpacity>
+        <View style={styles.horizontalLine} />
+      </View>
+      <Text style={{ textAlign: "center" ,marginTop:20}}>
+        {authenticating && "Authenticating....."}
+      </Text>
+    </>
   );
 };
 

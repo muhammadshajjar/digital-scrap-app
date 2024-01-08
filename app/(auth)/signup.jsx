@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  Alert,
+} from "react-native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, router } from "expo-router";
 
@@ -9,37 +17,40 @@ import { Ionicons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
 import { COLORS } from "../../constants/Colors";
+
 import GoogleAuth from "../../components/ui/GoogleAuth";
 import AuthInput from "../../components/ui/AuthInput";
-import { auth } from "../../lib/firebase/config";
-import { useAuthCreateUserWithEmailAndPassword } from "@react-query-firebase/auth";
 
+import auth from "@react-native-firebase/auth";
 
 const Signup = () => {
-
   const {
     control,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm();
 
   const password = watch("password", "");
 
-  const mutation = useAuthCreateUserWithEmailAndPassword(auth, {
-    onError(error) {
-      console.log(error.message);
-    },
-    onSuccess(){
-      router.push("/login");
-    }
-  });
+  const onSubmit = async (data) => {
 
-  const onSubmit = (data) => {
-    const {email, password} = data;
-      mutation.mutate({ email, password });
-
+    const { email, password } = data;
+    return auth()
+      .createUserWithEmailAndPassword(email, password)
+      .then(() => {
+        router.push("/login");
+      })
+      .catch((error) => {
+        if (error.code === "auth/email-already-in-use") {
+          Alert.alert("That email address is already in use!");
+        }
+        if (error.code === "auth/invalid-email") {
+          Alert.alert("That email address is invalid!");
+        }
+      });
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.form}>
@@ -174,7 +185,9 @@ const Signup = () => {
           )}
 
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.btn}>
-          <Text style={styles.btnTxt}>{mutation?.isLoading ? "creating..." : "Sign Up"}</Text>
+            <Text style={styles.btnTxt}>
+              {isSubmitting ? "Creating..." : "SignUp"}
+            </Text>
           </Pressable>
 
           <View style={styles.accountContainer}>
