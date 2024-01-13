@@ -9,21 +9,18 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-
 const CustomTabBarButton = ({ children, onPress }) => (
   <TouchableOpacity style={styles.customButtonContainer} onPress={onPress}>
     <View style={styles.customButton}>{children}</View>
   </TouchableOpacity>
 );
 
-
- const CustomerFlowLayout=()=> {
+const CustomerFlowLayout = () => {
   return (
     <Tabs
       screenOptions={({ route, navigation }) => {
         const state = navigation.getState();
         const hasNestedNavigation = state.routes[state.index].state?.index > 0; //  if the current state's route has a state, and its not the index of that route, then we've detected nested navigation
-        navigation;
         return {
           tabBarStyle: {
             display: hasNestedNavigation ? "none" : "flex", // hide for all nested navigation screens
@@ -48,6 +45,17 @@ const CustomTabBarButton = ({ children, onPress }) => (
     >
       <Tabs.Screen
         name="selling"
+        screenOptions={({ route, navigation }) => {
+          const state = navigation.getState();
+          const hasNestedNavigation =
+            state.routes[state.index].state?.index > 0; //  if the current state's route has a state, and its not the index of that route, then we've detected nested navigation
+          console.log(hasNestedNavigation + " has nested navigation");
+          return {
+            tabBarStyle: {
+              display: hasNestedNavigation ? "none" : "flex", // hide for all nested navigation screens
+            },
+          };
+        }}
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
@@ -109,9 +117,7 @@ const CustomTabBarButton = ({ children, onPress }) => (
         options={{
           tabBarLabel: "Profile",
           tabBarIcon: ({ focused }) => (
-            <View
-              style={styles.tabBarButtonIcon}
-            >
+            <View style={styles.tabBarButtonIcon}>
               <Ionicons
                 name="ios-person-outline"
                 size={28}
@@ -124,7 +130,7 @@ const CustomTabBarButton = ({ children, onPress }) => (
       />
     </Tabs>
   );
-}
+};
 export default CustomerFlowLayout;
 
 const styles = StyleSheet.create({
