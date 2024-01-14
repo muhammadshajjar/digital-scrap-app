@@ -17,7 +17,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { router } from "expo-router";
 
-const CustomHeader = ({  setSearchText }) => {
+const CustomHeader = ({ setSearchText,navigation }) => {
+
   const handleSearch = () => {
     console.log("Searching...");
   };
@@ -38,7 +39,7 @@ const CustomHeader = ({  setSearchText }) => {
           alignItems: "center",
           padding: 15,
           backgroundColor: COLORS.primaryGreen,
-          gap:12
+          gap: 12,
         }}
       >
         <View
@@ -57,8 +58,8 @@ const CustomHeader = ({  setSearchText }) => {
             style={{
               height: 40,
               paddingHorizontal: 10,
-              fontFamily:"Montserrat-Regular",
-              fontSize:17
+              fontFamily: "Montserrat-Regular",
+              fontSize: 17,
             }}
             placeholder="What are you looking for?"
             onChangeText={(text) => setSearchText(text)}
@@ -70,7 +71,6 @@ const CustomHeader = ({  setSearchText }) => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-
   );
 };
 
@@ -89,6 +89,7 @@ const Layout = () => {
         name="[id]"
         options={{ headerTitle: "Listing Details", headerShown: false }}
       />
+      <Stack.Screen name="checkout" options={{headerShown:false}} />
     </Stack>
   );
 };

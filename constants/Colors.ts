@@ -4,4 +4,5 @@ export const COLORS = {
   primaryBg:"#EFF8F1",
   lightGrey: "#B3B3B3",
   lightGreyBg: "#EAEAEA",
+  primaryGrey: "#858585",
 };
