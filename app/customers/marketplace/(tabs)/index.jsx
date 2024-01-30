@@ -8,9 +8,16 @@ import { MARKETPLACELISTING } from "../../../../lib/dummyData";
 
 const Scrap = () => {
   return (
-    <View style={{ backgroundColor: COLORS.primaryBg, flex: 1, padding: 15,paddingBottom:110 }}>
+    <View
+      style={{
+        backgroundColor: COLORS.primaryBg,
+        flex: 1,
+        padding: 15,
+        paddingBottom: 110,
+      }}
+    >
       <FlatList
-       showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={MARKETPLACELISTING}
         renderItem={({ item }) => <ListingCard listingData={item} />}
         keyExtractor={(item) => item.id}
