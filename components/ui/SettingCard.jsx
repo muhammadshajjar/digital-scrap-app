@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "white",
-    borderBottomWidth: 1,
+    borderTopWidth:0.5,
     borderColor: COLORS.lightGrey,
   },
   settingListTxt: {

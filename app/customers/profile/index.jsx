@@ -1,7 +1,5 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Link } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import ProfileHeader from "../../../components/ui/ProfileHeader";
 import { CUSTOMERSSETTINGSOPTIONS } from "../../../lib/dummyData";
 import SettingCard from "../../../components/ui/SettingCard";
@@ -13,7 +11,7 @@ const SettingsOption = ({ item }) => (
     <FlatList
       data={item?.options}
       renderItem={({ item }) => <SettingCard settingData={item} />}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => Math.random().toString()}
     />
   </View>
 );
@@ -26,7 +24,7 @@ const ProfileHome = () => {
         showsVerticalScrollIndicator={false}
         data={CUSTOMERSSETTINGSOPTIONS}
         renderItem={({ item }) => <SettingsOption item={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => Math.random().toString()}
       />
     </View>
   );
