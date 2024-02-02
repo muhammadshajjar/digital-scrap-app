@@ -1,20 +1,34 @@
 import { View, Text, StyleSheet, Switch } from "react-native";
 import React, { useState } from "react";
 import { COLORS } from "../../constants/Colors";
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5 } from "@expo/vector-icons";
+import { Link, router } from "expo-router";
 
 const ProfileHeader = ({ mode }) => {
   const [isEnabled, setIsEnabled] = useState(false);
 
   const toggleSwitch = () => {
     setIsEnabled((previousState) => !previousState);
+    console.log("toggleSwitch");
+
+    if (mode === "rider") {
+      router.push("/riders");
+    }else{
+      // router.back();
+      router.push("/customers")
+    }
+    
   };
   return (
     <>
       <View style={styles.container}>
         <View style={styles.profileContainer}>
           <View style={styles.profileImg}>
-          <FontAwesome5 name="user-alt" size={24} color={COLORS.primaryGreen} />
+            <FontAwesome5
+              name="user-alt"
+              size={24}
+              color={COLORS.primaryGreen}
+            />
           </View>
           <View style={styles.profile}>
             <Text style={styles.profileTxt}>Talha Arshad</Text>
@@ -57,7 +71,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  profile:{
+  profile: {
     marginLeft: 10,
   },
   profileTxt: {
@@ -65,7 +79,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Montserrat-SemiBold",
   },
-  profilePrice:{
+  profilePrice: {
     fontSize: 15,
     fontFamily: "Montserrat-Medium",
     color: "white",
@@ -81,8 +95,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     marginTop: -28,
-    borderWidth:1,
-    borderColor:"#DDDDDD",
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
   },
   modeTxt: {
     fontSize: 17,

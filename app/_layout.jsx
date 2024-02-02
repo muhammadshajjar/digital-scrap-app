@@ -100,6 +100,7 @@ function RootLayoutNav() {
         <Stack>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="customers" options={{ headerShown: false }} />
+          <Stack.Screen name="riders" options={{ headerShown: false }} />
           <Stack.Screen
             name="cartmodal"
             options={{
