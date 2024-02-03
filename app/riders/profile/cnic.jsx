@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const Verfication = () => {
+const Cnic = () => {
   return (
     <View>
-      <Text>ONLINE VERFICAITON</Text>
+      <Text>Cnic</Text>
     </View>
   )
 }
 
-export default Verfication;
+export default Cnic;
 
 const styles = StyleSheet.create({})

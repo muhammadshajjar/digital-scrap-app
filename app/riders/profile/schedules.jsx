@@ -1,12 +1,19 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View ,FlatList} from "react-native";
 import React from "react";
 import ScheduleCard from "../../../components/ui/ScheduleCard";
 import { COLORS } from "../../../constants/Colors";
+import { RIDERSSCHEDULESDATA } from "../../../lib/dummyData";
+import RiderScheduleCard from "../../../components/ui/RiderScheduleCard";
 
 const Schedules = () => {
   return (
     <View style={styles.container}>
-      <ScheduleCard />
+      <FlatList
+        data={RIDERSSCHEDULESDATA}
+        renderItem={({ item }) => <RiderScheduleCard data={item} settings={true} />}
+        keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 };
@@ -14,10 +21,10 @@ const Schedules = () => {
 export default Schedules;
 
 const styles = StyleSheet.create({
-  container:{
-    paddingVertical:36,
-    paddingHorizontal:10,
-    backgroundColor:COLORS.primaryBg,
-    flex:1,
-  }
+  container: {
+    backgroundColor: COLORS.primaryBg,
+    flex: 1,
+    paddingVertical: 25,
+    paddingHorizontal: 12,
+  },
 });

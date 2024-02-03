@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-const HelpCenter = () => {
+
+const Idverification = () => {
   return (
     <View>
-      <Text>helpcenter</Text>
+      <Text>idverification</Text>
     </View>
   )
 }
 
-export default HelpCenter
+export default Idverification;
 
 const styles = StyleSheet.create({})
