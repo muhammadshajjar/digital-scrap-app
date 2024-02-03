@@ -39,7 +39,7 @@ const RiderFlowLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="schedules"
         options={{
           tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
