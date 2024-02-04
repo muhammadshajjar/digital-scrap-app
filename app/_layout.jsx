@@ -11,6 +11,9 @@ import { useColorScheme } from "react-native";
 
 import { AuthProvider } from "../context/auth-context";
 
+import { store } from "../store/redux/store";
+import { Provider } from "react-redux";
+
 // import {
 //   useQuery,
 //   useMutation,
@@ -77,7 +80,9 @@ export default function RootLayout() {
     // <QueryClientProvider client={queryClient} contextSharing={true}>
 
     // </QueryClientProvider>
-    <RootLayoutNav />
+    <Provider store={store}>
+      <RootLayoutNav />
+    </Provider>
   );
 }
 

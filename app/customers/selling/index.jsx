@@ -16,9 +16,14 @@ import { CATEGORIESDATA } from "../../../lib/dummyData";
 import { COLORS } from "../../../constants/Colors";
 
 import { Ionicons } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
+
+import { addSelectedCategory } from "../../../store/redux/sellingSlice";
 
 const SellingHome = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
+
+  const dispatch = useDispatch();
 
   const handleCategoryPress = (categoryId) => {
     setSelectedCategories((prevSelected) =>
@@ -29,12 +34,12 @@ const SellingHome = () => {
   };
 
   const nextWithSelectedCategoriesHandler = () => {
-    if(selectedCategories.length > 0){
+    if (selectedCategories.length > 0) {
+      dispatch(addSelectedCategory(selectedCategories));
       router.push("/customers/selling/form");
-    }else{
-      Alert.alert("Error","Please select a category!");
+    } else {
+      Alert.alert("Error", "Please select a category!");
     }
-  
   };
 
   return (
