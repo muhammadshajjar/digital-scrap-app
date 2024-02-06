@@ -10,13 +10,11 @@ const SellingFromStepsBtn = ({
   backIsShown = true,
   forwIsShown = true,
   checkIsShown = false,
-  //   onGoNext = () => {},
-  //   onDone,
+  onSubmitCallback,
 }) => {
-  //   const forwardHandler = () => {
-  //     onGoNext();
-  //     navigation.navigate(fPath);
-  //   };
+  const forwardHandler = () => {
+    onSubmitCallback();
+  };
 
   return (
     <View style={styles.navContainer}>
@@ -29,10 +27,7 @@ const SellingFromStepsBtn = ({
         </TouchableOpacity>
       )}
       {forwIsShown && (
-        <TouchableOpacity
-          style={styles.btnContainer}
-          onPress={() => router.push(fPath)}
-        >
+        <TouchableOpacity style={styles.btnContainer} onPress={forwardHandler}>
           <AntDesign name="arrowright" size={30} color="white" />
         </TouchableOpacity>
       )}

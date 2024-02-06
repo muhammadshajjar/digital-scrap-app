@@ -10,6 +10,7 @@ import { SUBCATEGORIESDATA } from "../../../lib/dummyData";
 import { mergeSubCategories } from "../../../helper/utilityFunctions";
 import SelectedCategory from "../../../components/ui/SelectedCategory";
 import SellingFromStepsBtn from "../../../components/ui/SellingFormStepsBtn";
+import { router } from "expo-router";
 
 const SellingForm = () => {
   const dispatch = useDispatch();
@@ -17,7 +18,6 @@ const SellingForm = () => {
   const selectedCategories = useSelector(
     (state) => state.selling.selectedCategory
   );
-
 
   const mergedCategories = mergeSubCategories(
     selectedCategories,
@@ -28,6 +28,11 @@ const SellingForm = () => {
     isFocused && dispatch(changeProgress(1));
   }, [isFocused]);
 
+  const submitHanlder = () => {
+    console.log("Submited first handler");
+
+    router.push("/customers/selling/step2")
+  };
   return (
     <View style={styles.container}>
       <SellingFormSteps />
@@ -37,10 +42,10 @@ const SellingForm = () => {
         renderItem={({ item }) => <SelectedCategory categoryData={item} />}
         keyExtractor={(item) => Math.random().toString()}
       />
-
       <SellingFromStepsBtn
         backIsShown={false}
         fPath="/customers/selling/step2"
+        onSubmitCallback={submitHanlder}
       />
     </View>
   );
