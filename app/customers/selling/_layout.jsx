@@ -1,4 +1,8 @@
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
+
+import { TouchableOpacity } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+
 
 export default function SellingFlow() {
   return (
@@ -12,6 +16,21 @@ export default function SellingFlow() {
       <Stack.Screen
         name="step3"
         options={{ headerTitle: "Sell", headerBackVisible: false }}
+      />
+      <Stack.Screen
+        name="final"
+        options={{
+          headerTitle: "Schedule Placed",
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/customers/selling");
+              }}
+            >
+              <AntDesign name="arrowleft" size={24} color="black" />
+            </TouchableOpacity>
+          ),
+        }}
       />
     </Stack>
   );
