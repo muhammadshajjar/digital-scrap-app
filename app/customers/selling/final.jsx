@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { StyleSheet, Text, View, Button, Image } from "react-native";
+import React, { useState } from "react";
 import { COLORS } from "../../../constants/Colors";
 
 import LottieView from "lottie-react-native";
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     textAlign: "center",
     marginVertical: 10,
-    lineHeight:30
+    lineHeight: 30,
   },
   descTxt: {
     fontSize: 17,
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginBottom: 6,
   },
-  priceTxt:{
-    color:COLORS.primaryGreen,
-  }
+  priceTxt: {
+    color: COLORS.primaryGreen,
+  },
 });

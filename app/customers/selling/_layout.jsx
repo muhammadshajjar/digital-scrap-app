@@ -20,14 +20,14 @@ export default function SellingFlow() {
       <Stack.Screen
         name="final"
         options={{
-          headerTitle: "Schedule Placed",
+          headerTitle: "Schedule Confirmed",
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => {
                 router.push("/customers/selling");
               }}
             >
-              <AntDesign name="arrowleft" size={24} color="black" />
+              <AntDesign name="arrowleft" size={24} color="black" style={{marginRight:10}} />
             </TouchableOpacity>
           ),
         }}

@@ -32,10 +32,7 @@ const SellingFromStepsBtn = ({
         </TouchableOpacity>
       )}
       {checkIsShown && (
-        <TouchableOpacity
-          style={styles.btnContainer}
-          onPress={() => router.push(fPath)}
-        >
+        <TouchableOpacity style={styles.btnContainer} onPress={forwardHandler}>
           <AntDesign name="check" size={30} color="white" />
         </TouchableOpacity>
       )}

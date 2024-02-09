@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.shajjar99.digital-scrap-app",
@@ -38,6 +36,13 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-google-signin/google-signin",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "This app accesses your photos in order to upload your scrap material picture.",
+          "cameraPermission": "This app accesses your camera in order to take picture of your scrap material."
+        }
+      ],
       [
         "expo-build-properties",
         {

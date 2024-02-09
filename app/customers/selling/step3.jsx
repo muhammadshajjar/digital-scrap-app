@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Pressable } from "react-native";
-import React, { useEffect } from "react";
+import { StyleSheet, Text, View, Pressable, Alert, Image } from "react-native";
+import React, { useState, useEffect } from "react";
 import SellingFormSteps from "../../../components/ui/SellingFormSteps";
 
 import { useIsFocused } from "@react-navigation/native";
@@ -11,43 +11,109 @@ import SellingFromStepsBtn from "../../../components/ui/SellingFormStepsBtn";
 import { COLORS } from "../../../constants/Colors";
 import { Entypo } from "@expo/vector-icons";
 
-const Step3 = () => {
-  const dispatch = useDispatch();
+import {
+  launchCameraAsync,
+  useCameraPermissions,
+  PermissionStatus,
+} from "expo-image-picker";
+import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 
+const Step3 = () => {
+  const [image, setImage] = useState(null);
+  const [cameraPermissionInformation, requestPermission] =
+    useCameraPermissions();
+
+  const dispatch = useDispatch();
   const isFocused = useIsFocused();
   useEffect(() => {
     isFocused && dispatch(changeProgress(3));
   }, [isFocused]);
 
-  
+
+  const verifyPermission = async () => {
+    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+      const permissionResponse = await requestPermission();
+      return permissionResponse.granted;
+    }
+    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+      Alert.alert(
+        "Insuficient permission",
+        "You need to grant camera permissions to use the app."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const takePictureHandler = async () => {
+    const hasPermission = await verifyPermission();
+
+    if (!hasPermission) {
+      return;
+    }
+
+    const result = await launchCameraAsync({
+      allowsEditing: true,
+      aspectRatio: [16, 9],
+      quality: 0.5,
+    });
+
+    setImage(result?.assets[0].uri);
+  };
+
+  const chooseImageHandler = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.5,
+    });
+
+    if (!result?.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+
+  const handleSubmit = () => {
+    if (!image) {
+      Alert.alert("Error","Please select or take picture of your scrap material to proceed");
+      return false;
+    } else {
+      router.push("/customers/selling/final");
+    }
+  };
   return (
     <View style={styles.container}>
       <SellingFormSteps />
 
       <View style={styles.content}>
         <View style={styles.imgContainer}>
-          <Entypo name="images" size={50} color={COLORS.lightGrey} />
+          {!image && (
+            <Entypo name="images" size={50} color={COLORS.lightGrey} />
+          )}
+          {image && (
+            <Image
+              source={{ uri: image }}
+              style={{ width: "90%", height: "90%" }}
+            />
+          )}
         </View>
-        <Pressable
-          onPress={() => console.log("Upload btn is pressed")}
-          style={styles.uploadBtn}
-        >
+        <Pressable onPress={chooseImageHandler} style={styles.uploadBtn}>
           <Text style={styles.uploadBtnTxt}>Upload pictures</Text>
         </Pressable>
         <Text style={styles.orTxt}>OR</Text>
-        <Pressable
-          onPress={() => console.log("Camera btn is pressed")}
-          style={styles.cameraBtn}
-        >
+        <Pressable onPress={takePictureHandler} style={styles.cameraBtn}>
           <Entypo name="camera" size={24} color="white" />
         </Pressable>
       </View>
 
       <SellingFromStepsBtn
-        fPath="/customers/selling/final"
         bPath="/customers/selling/step2"
         forwIsShown={false}
         checkIsShown={true}
+        onSubmitCallback={handleSubmit}
       />
     </View>
   );
@@ -73,7 +139,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "80%",
     marginBottom: 12,
-    justifyContent:"center",
+    justifyContent: "center",
     alignItems: "center",
   },
   uploadBtn: {
