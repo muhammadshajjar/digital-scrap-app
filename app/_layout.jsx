@@ -52,6 +52,7 @@ export default function RootLayout() {
     "Montserrat-ExtraBold": require("../assets/fonts/Montserrat-ExtraBold.ttf"),
     "Montserrat-Light": require("../assets/fonts/Montserrat-Light.ttf"),
     "Montserrat-Medium": require("../assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-Medium-Italic": require("../assets/fonts/Montserrat-MediumItalic.ttf"),
   });
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
