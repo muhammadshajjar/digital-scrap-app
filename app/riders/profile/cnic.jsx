@@ -7,10 +7,15 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+
 import React, { useState } from "react";
 import { COLORS } from "../../../constants/Colors";
 import PhotoCard from "../../../components/ui/PhotoCard";
 import { router } from "expo-router";
+
+const PHOTOPLACEHOLDERFRONT = require("../../../assets/images/cnicfrontplaceholder.png");
+const PHOTOPLACEHOLDERBACK = require("../../../assets/images/cnicbackplaceholder.png");
+
 
 const Cnic = () => {
   const [cnicFront, setCnicFront] = useState(null);
@@ -27,6 +32,7 @@ const Cnic = () => {
       } else return number;
     });
   };
+
   const submitDataHanlder = () => {
     if (!cnicFront || !cnicBack || !cnicnNumber) {
       Alert.alert("Error", `Please fill all fields`);
@@ -34,17 +40,20 @@ const Cnic = () => {
     }
     router.back();
   };
+  
   return (
     <ScrollView style={styles.container}>
       <PhotoCard
         title="CNIC (front side)"
         photo={cnicFront}
         onSetPhoto={setCnicFront}
+        PHOTOPLACEHOLDER={PHOTOPLACEHOLDERFRONT}
       />
       <PhotoCard
         title="CNIC (back side)"
         photo={cnicBack}
         onSetPhoto={setCnicBack}
+        PHOTOPLACEHOLDER={PHOTOPLACEHOLDERBACK}
       />
       <View style={styles.formContainer}>
         <Text style={styles.labelTxt}>CNIC number</Text>

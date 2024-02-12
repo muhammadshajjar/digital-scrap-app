@@ -1,7 +1,13 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { COLORS } from "../../../constants/Colors";
 import { router } from "expo-router";
+
+import {
+  launchCameraAsync,
+  useCameraPermissions,
+  PermissionStatus,
+} from "expo-image-picker";
 
 const PICTURETAKINGSTEPS = [
   "The photo should clearly show the face and your drivers license",
@@ -10,21 +16,67 @@ const PICTURETAKINGSTEPS = [
 ];
 
 const Idverification = () => {
+  const [image, setImage] = useState(null);
+  const [cameraPermissionInformation, requestPermission] =
+    useCameraPermissions();
+
   const submitDataHanlder = () => {
     router.back();
+  };
+
+  const verifyPermission = async () => {
+    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+      const permissionResponse = await requestPermission();
+      return permissionResponse.granted;
+    }
+    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+      Alert.alert(
+        "Insuficient permission",
+        "You need to grant camera permissions to use the app."
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const takePictureHandler = async () => {
+    const hasPermission = await verifyPermission();
+
+    if (!hasPermission) {
+      return;
+    }
+
+    const result = await launchCameraAsync({
+      allowsEditing: true,
+      aspectRatio: [16, 9],
+      quality: 0.5,
+    });
+
+    setImage(result?.assets[0].uri);
   };
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.imgContainer}>
-          <Image
-            source={require("../../../assets/images/manholdingcardillustration.png")}
-            style={{ height: "100%", width: "100%" }}
-          />
+          {!image && (
+            <Image
+              source={require("../../../assets/images/manholdingcardillustration.png")}
+              style={{ height: "100%", width: "100%" }}
+            />
+          )}
+          {image && (
+            <Image
+              source={{ uri: image }}
+              style={{ width: "100%", height: "100%" }}
+            />
+          )}
         </View>
 
-        <TouchableOpacity style={styles.addProfileBtn}>
-          <Text style={styles.addProfileTxt}>Add Photo</Text>
+        <TouchableOpacity
+          style={styles.addProfileBtn}
+          onPress={takePictureHandler}
+        >
+          <Text style={styles.addProfileTxt}>Take Picture</Text>
         </TouchableOpacity>
 
         <Text style={styles.title}>
@@ -58,7 +110,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "white",
-    padding: 20,
+    paddingVertical: 35,
+    paddingHorizontal:20,
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",

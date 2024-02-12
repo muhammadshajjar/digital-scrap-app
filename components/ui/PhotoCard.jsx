@@ -3,8 +3,8 @@ import React, { useState } from "react";
 
 import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../constants/Colors";
-const PhotoCard = ({ title ,photo,onSetPhoto}) => {
-//   const [image, setImage] = useState(null);
+const PhotoCard = ({ title, photo, onSetPhoto, PHOTOPLACEHOLDER }) => {
+  //   const [image, setImage] = useState(null);
 
   const chooseImageHandler = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -15,7 +15,7 @@ const PhotoCard = ({ title ,photo,onSetPhoto}) => {
     });
 
     if (!result?.canceled) {
-        onSetPhoto(result.assets[0].uri);
+      onSetPhoto(result.assets[0].uri);
     }
   };
 
@@ -24,7 +24,7 @@ const PhotoCard = ({ title ,photo,onSetPhoto}) => {
       <Text style={styles.titleTxt}>{title}</Text>
       <View style={styles.imgContainer}>
         {!photo && (
-          <Image source={require("../../assets/images/cnicfrontplaceholder.png")} style={{ width: 130, height: 80 }} />
+          <Image source={PHOTOPLACEHOLDER} style={{ width: 130, height: 80 }} />
         )}
         {photo && (
           <Image source={{ uri: photo }} style={{ width: 130, height: 80 }} />
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     // For Android
     elevation: 3,
-    marginVertical:10
+    marginVertical: 10,
   },
   titleTxt: {
     fontFamily: "Montserrat-Medium",
