@@ -57,20 +57,15 @@ const Idverification = () => {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <View style={styles.imgContainer}>
-          {!image && (
-            <Image
-              source={require("../../../assets/images/manholdingcardillustration.png")}
-              style={{ height: "100%", width: "100%" }}
-            />
-          )}
-          {image && (
-            <Image
-              source={{ uri: image }}
-              style={{ width: "100%", height: "100%" }}
-            />
-          )}
-        </View>
+        {!image && (
+          <Image
+            source={require("../../../assets/images/manholdingcardillustration.png")}
+            style={{ height: 200, width: 100 }}
+          />
+        )}
+        {image && (
+          <Image source={{ uri: image }} style={{ height: 200, width: 200 }} />
+        )}
 
         <TouchableOpacity
           style={styles.addProfileBtn}
@@ -111,7 +106,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "white",
     paddingVertical: 35,
-    paddingHorizontal:20,
+    paddingHorizontal: 20,
     borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
@@ -125,7 +120,7 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     height: 200,
-    width: 100,
+    width: 200,
   },
   title: {
     fontFamily: "Montserrat-Medium",

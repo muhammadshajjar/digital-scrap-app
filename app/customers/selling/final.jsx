@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   noteTitle: {
-    fontFamily: "Montserrat-Medium",
+    fontFamily: "Montserrat-Medium-Italic",
     fontSize: 17,
   },
   noteTxt: {

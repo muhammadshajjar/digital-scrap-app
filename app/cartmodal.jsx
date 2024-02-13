@@ -25,7 +25,7 @@ const CartModal = () => {
         backgroundColor: COLORS.primaryBg,
       }}
     >
-      <View style={{ height: "70%" }}>
+      <View style={{ height: "64%" }}>
         <FlatList
         showsVerticalScrollIndicator={false}
           contentContainerStyle={{ gap: 10 }}
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
   totalLabel: {
     fontSize: 24,
-    fontFamily: "Montserrat-Semibold",
+    fontFamily: "Montserrat-SemiBold",
   },
   btn: {
     backgroundColor: COLORS.primaryGreen,

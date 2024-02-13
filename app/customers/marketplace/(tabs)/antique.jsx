@@ -8,9 +8,11 @@ import { MARKETPLACELISTING } from "../../../../lib/dummyData";
 
 const Antique = () => {
   return (
-    <View style={{ backgroundColor: COLORS.primaryBg, flex: 1, padding: 15,paddingBottom:110 }}>
+    <View
+      style={{ backgroundColor: COLORS.primaryBg, height: "90%", padding: 15 }}
+    >
       <FlatList
-       showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
         data={MARKETPLACELISTING}
         renderItem={({ item }) => <ListingCard listingData={item} />}
         keyExtractor={(item) => item.id}

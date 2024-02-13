@@ -36,7 +36,7 @@ const Home = () => {
             backgroundColor: "white",
           }}
           trackBar={styles.trackBar}
-          thumbStyle={{backgroundColor:COLORS.primaryGreen}}
+          thumbStyle={{ backgroundColor: COLORS.primaryGreen }}
           thumbButton={styles.thumbButton}
         />
       </SafeAreaView>
@@ -132,13 +132,14 @@ const styles = StyleSheet.create({
   },
   mapBtn: {
     backgroundColor: "black",
-    paddingVertical: 20,
-    paddingHorizontal: 30,
+    paddingVertical: 16,
+    paddingHorizontal: 28,
     borderRadius: 59,
     width: 120,
     alignSelf: "center",
-    marginTop:8,
-
+    marginTop: 8,
+    position: "absolute",
+    bottom: 90,
   },
   mapBtnTxt: {
     color: "white",

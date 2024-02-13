@@ -50,7 +50,7 @@ export default RiderScheduleCard;
 
 const styles = StyleSheet.create({
   card: {
-    padding: 20,
+    padding: 15,
     backgroundColor: "white",
     borderRadius: 10,
     shadowColor: "#1B1919",
@@ -72,17 +72,17 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   title: {
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: "Montserrat-Bold",
     marginRight: 8,
   },
   desc: {
     fontFamily: "Montserrat-Regular",
-    fontSize: 17,
+    fontSize: 14,
   },
   addressTxt: {
     fontFamily: "Montserrat-Regular",
-    fontSize: 17,
+    fontSize: 15,
   },
   actions: {
     flexDirection: "row",

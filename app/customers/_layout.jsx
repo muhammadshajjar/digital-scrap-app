@@ -28,7 +28,7 @@ const CustomerFlowLayout = () => {
             backgroundColor: "#ffffff",
             borderTopLeftRadius: 40,
             borderTopRightRadius: 40,
-            height: 80,
+            height: Platform.OS === "android" ? 72 : 80,
             shadowColor: "#42A554",
             shadowOffset: {
               width: 0,
@@ -37,9 +37,11 @@ const CustomerFlowLayout = () => {
             shadowOpacity: 0.39,
             shadowRadius: 8.3,
             elevation: 13,
+            
           },
           headerShown: false,
           tabBarShowLabel: false,
+          tabBarHideOnKeyboard: true,
         };
       }}
     >
@@ -62,7 +64,7 @@ const CustomerFlowLayout = () => {
             <View style={styles.tabBarButtonIcon}>
               <Ionicons
                 name="home-outline"
-                size={28}
+                size={24}
                 color={focused ? "#42A554" : "#9DB2CE"}
               />
               {focused && <Text style={styles.label}>Home</Text>}
@@ -78,7 +80,7 @@ const CustomerFlowLayout = () => {
             <View style={styles.tabBarButtonIcon}>
               <Ionicons
                 name="ios-newspaper-outline"
-                size={28}
+                size={24}
                 color={focused ? "#42A554" : "#9DB2CE"}
               />
               {focused && <Text style={styles.label}>News</Text>}
@@ -103,7 +105,7 @@ const CustomerFlowLayout = () => {
             <View style={styles.tabBarButtonIcon}>
               <Ionicons
                 name="ios-chatbubble-outline"
-                size={28}
+                size={24}
                 color={focused ? "#42A554" : "#9DB2CE"}
               />
               {focused && <Text style={styles.label}>Chat</Text>}
@@ -120,7 +122,7 @@ const CustomerFlowLayout = () => {
             <View style={styles.tabBarButtonIcon}>
               <Ionicons
                 name="ios-person-outline"
-                size={28}
+                size={24}
                 color={focused ? "#42A554" : "#9DB2CE"}
               />
               {focused && <Text style={styles.label}>Profile</Text>}
@@ -140,13 +142,13 @@ const styles = StyleSheet.create({
     top: Platform.OS === "ios" && 12,
   },
   customButtonContainer: {
-    top: -20,
+    top: Platform.OS === "android" ? -30 : -20,
     justifyContent: "center",
     alignItems: "center",
   },
   customButton: {
-    width: 70,
-    height: 70,
+    width: 65,
+    height: 65,
     borderRadius: 35,
     backgroundColor: "#42A554",
     shadowColor: "#42a554",

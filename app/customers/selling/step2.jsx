@@ -133,6 +133,7 @@ const Step2 = () => {
                   onChange={dateChangeHandler}
                   display="spinner"
                   themeVariant="light"
+                  minimumDate={new Date()}
                 />
               )}
             </>
@@ -206,6 +207,7 @@ const Step2 = () => {
                   onChangeText={onChange}
                   value={value}
                   style={[styles.pickerField, { width: "80%" }]}
+                  keyboardType="numeric"
                 />
 
                 <MaterialCommunityIcons

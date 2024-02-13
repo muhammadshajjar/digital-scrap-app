@@ -42,7 +42,7 @@ export default Intro;
 
 const styles = StyleSheet.create({
   imgContainer: {
-    flex: 4.5,
+    flex: 4.3,
   },
   img: {
     height: "100%",

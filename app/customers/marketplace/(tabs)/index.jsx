@@ -11,9 +11,8 @@ const Scrap = () => {
     <View
       style={{
         backgroundColor: COLORS.primaryBg,
-        flex: 1,
         padding: 15,
-        paddingBottom: 110,
+        height: "90%",
       }}
     >
       <FlatList

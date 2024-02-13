@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { COLORS } from "../../constants/Colors";
-import { AntDesign } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { Link, router } from "expo-router";
 
@@ -15,7 +15,7 @@ const SettingCard = ({ settingData }) => {
         {settingData?.icon}
         <Text style={styles.settingListTxt}>{settingData?.name}</Text>
       </View>
-      <AntDesign name="arrowright" size={24} color={COLORS.lightGrey} />
+      <FontAwesome name="angle-right" size={24} color={COLORS.primaryGrey} />
     </TouchableOpacity>
   );
 };
@@ -30,17 +30,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     backgroundColor: "white",
-    borderTopWidth:0.5,
+    borderTopWidth: 0.5,
     borderColor: COLORS.lightGrey,
   },
   settingListTxt: {
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: "Montserrat-Regular",
-    marginLeft:14
+    marginLeft: 14,
   },
   flexRow: {
     flexDirection: "row",
     marginLeft: 8,
-    alignItems:"center",
+    alignItems: "center",
   },
 });

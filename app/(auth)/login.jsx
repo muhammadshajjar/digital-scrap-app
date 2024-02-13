@@ -80,7 +80,7 @@ const Login = () => {
 
       <View style={styles.form}>
         <Text style={styles.heading}>Login</Text>
-        <ScrollView>
+        <ScrollView showsVerticalScrollIndicator={false}>
           <Controller
             control={control}
             rules={{

@@ -21,11 +21,11 @@ const CartItem = () => {
           <Text style={styles.price}>2,000</Text>
           <View style={styles.flexRow}>
             <TouchableOpacity style={styles.actionBtn}>
-              <AntDesign name="plus" size={20} color="black" />
+              <AntDesign name="plus" size={18} color="black" />
             </TouchableOpacity>
             <Text style={styles.quantityTxt}>2</Text>
             <TouchableOpacity style={styles.actionBtn}>
-              <AntDesign name="minus" size={20} color="black" />
+              <AntDesign name="minus" size={18} color="black" />
             </TouchableOpacity>
           </View>
         </View>
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   img: {
-    width: 120,
-    height: 120,
+    width: 110,
+    height: 110,
     borderRadius: 10,
   },
   contentContainer: {
@@ -61,17 +61,17 @@ const styles = StyleSheet.create({
     gap:10,
   },
   title: {
-    fontSize: 19,
+    fontSize: 18,
     fontFamily: "Montserrat-Medium",
     marginBottom: 4,
   },
   price: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "Montserrat-Medium",
   },
   conditionTxt: {
     marginTop: 5,
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: "Montserrat-Medium",
   },
   actionContainer: {
@@ -82,14 +82,14 @@ const styles = StyleSheet.create({
   },
   actionBtn: {
     backgroundColor: COLORS.lightGreyBg,
-    height: 30,
-    width: 30,
+    height: 28,
+    width: 28,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 35,
   },
   quantityTxt: {
-    fontSize: 18,
-    fontFamily: "Montserrat-Semibold",
+    fontSize: 16,
+    fontFamily: "Montserrat-SemiBold",
   }
 });
