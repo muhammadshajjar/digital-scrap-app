@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1018730329907-ht0coudmu7i6lsm16rvbha2hh72h20t6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shajjar99.digitalscrapapp",
+            "certificate_hash": "157fb8dc1ce3cecf2bbb51a98219a176ba56621d"
+          }
+        },
+        {
           "client_id": "1018730329907-7d91lkguomqcpaggfn866ma1gnv5m0ki.apps.googleusercontent.com",
           "client_type": 3
         }
