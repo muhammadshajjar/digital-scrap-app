@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -202,10 +203,16 @@ const Signup = () => {
           )}
 
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.btn}>
-            <Text style={styles.btnTxt}>
-              {isSubmitting ? "Creating..." : "SignUp"}
-            </Text>
+            <Text style={styles.btnTxt}>{"SignUp"}</Text>
           </Pressable>
+
+          {isSubmitting && (
+            <ActivityIndicator
+              style={{ marginTop: 20 }}
+              size="small"
+              color={COLORS.primaryGreen}
+            />
+          )}
 
           <View style={styles.accountContainer}>
             <Text style={styles.accountTxt}>Already have an account?</Text>

@@ -1,4 +1,11 @@
-import { StyleSheet, TouchableOpacity, View, Alert, Text } from "react-native";
+import {
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Alert,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState } from "react";
 import { Image } from "expo-image";
 import { COLORS } from "../../constants/Colors";
@@ -73,9 +80,15 @@ const GoogleAuth = ({ forSignUp }) => {
         </TouchableOpacity>
         <View style={styles.horizontalLine} />
       </View>
-      <Text style={{ textAlign: "center", marginTop: 20 }}>
-        {authenticating && "Authenticating....."}
-      </Text>
+      <View style={{ textAlign: "center", marginTop: 20 }}>
+        {authenticating && (
+          <ActivityIndicator
+            style={{ marginTop: 20 }}
+            size="small"
+            color={COLORS.primaryGreen}
+          />
+        )}
+      </View>
     </>
   );
 };

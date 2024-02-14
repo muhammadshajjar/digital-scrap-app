@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import { Image } from "expo-image";
@@ -167,10 +168,15 @@ const Login = () => {
             </Text>
           </TouchableOpacity>
           <Pressable onPress={handleSubmit(onSubmit)} style={styles.btn}>
-            <Text style={styles.btnTxt}>
-              {isSubmitting ? "Loading.." : "Login"}
-            </Text>
+            <Text style={styles.btnTxt}>{"Login"}</Text>
           </Pressable>
+          {isSubmitting && (
+            <ActivityIndicator
+              style={{ marginTop: 20 }}
+              size="small"
+              color={COLORS.primaryGreen}
+            />
+          )}
           <Text style={styles.alternativeTxt}>Or, login with...</Text>
 
           <GoogleAuth />
