@@ -6,13 +6,19 @@ import { router } from "expo-router";
 
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { generateUserName } from "../../helper/utilityFunctions";
+import firestore from "@react-native-firebase/firestore";
+import { useDispatch } from "react-redux";
+
+import { setUserProfileInfo } from "../../store/redux/userSlice";
 
 GoogleSignin.configure({
   webClientId:
     "1018730329907-7d91lkguomqcpaggfn866ma1gnv5m0ki.apps.googleusercontent.com",
 });
 
-const GoogleAuth = () => {
+const GoogleAuth = ({ forSignUp }) => {
+  const dispatch = useDispatch();
   const [authenticating, setAuthenticating] = useState(false);
 
   const googleSigninHandler = async () => {
@@ -31,7 +37,16 @@ const GoogleAuth = () => {
       // Sign-in the user with the credential
       const result = await auth().signInWithCredential(googleCredential);
 
-      console.log(result);
+      const userInfo = {
+        uid: result?.user.uid,
+        userName: generateUserName(result?.user.email),
+        email: result?.user.email,
+        displayName: result?.user.displayName,
+      };
+
+      await firestore().collection("users").doc(userInfo.uid).set(userInfo);
+      dispatch(setUserProfileInfo(userInfo));
+
       setAuthenticating(false);
       router.push("/customers");
     } catch (e) {
@@ -58,7 +73,7 @@ const GoogleAuth = () => {
         </TouchableOpacity>
         <View style={styles.horizontalLine} />
       </View>
-      <Text style={{ textAlign: "center" ,marginTop:20}}>
+      <Text style={{ textAlign: "center", marginTop: 20 }}>
         {authenticating && "Authenticating....."}
       </Text>
     </>

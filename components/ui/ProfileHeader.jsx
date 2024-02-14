@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import { COLORS } from "../../constants/Colors";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
+import { useSelector } from "react-redux";
 
 const ProfileHeader = ({ mode }) => {
+  const currentUser = useSelector((state) => state.user.personalInfo);
   const [isEnabled, setIsEnabled] = useState(false);
 
   const toggleSwitch = () => {
@@ -13,11 +15,10 @@ const ProfileHeader = ({ mode }) => {
 
     if (mode === "rider") {
       router.push("/riders");
-    }else{
+    } else {
       // router.back();
-      router.push("/customers")
+      router.push("/customers");
     }
-    
   };
   return (
     <>
@@ -31,8 +32,8 @@ const ProfileHeader = ({ mode }) => {
             />
           </View>
           <View style={styles.profile}>
-            <Text style={styles.profileTxt}>Talha Arshad</Text>
-            <Text style={styles.profilePrice}>Balance: Rs. 400</Text>
+            <Text style={styles.profileTxt}>{currentUser?.displayName}</Text>
+            <Text style={styles.profilePrice}>{currentUser?.userName}</Text>
           </View>
         </View>
       </View>

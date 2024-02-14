@@ -10,11 +10,21 @@ import React from "react";
 import { COLORS } from "../../../constants/Colors";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { router, Link } from "expo-router";
+import { router } from "expo-router";
+
+import auth from "@react-native-firebase/auth";
+import { useSelector } from "react-redux";
+
 const Account = () => {
-  const logoutUserHandler = () => {
-    // router.push("/(auth)/login")
-    router.back();
+  const currentUser = useSelector((state) => state.user.personalInfo);
+  const logoutUserHandler = async () => {
+    try {
+      await auth().signOut();
+      console.log("User signed out!");
+      router.push("(auth)");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
   };
   return (
     <View style={styles.container}>
@@ -23,8 +33,8 @@ const Account = () => {
           <FontAwesome5 name="user-alt" size={24} color="white" />
         </View>
         <View>
-          <Text style={styles.name}>Talha Arsahad</Text>
-          <Text style={styles.username}>@talha_kashmir</Text>
+        <Text style={styles.name}>{currentUser?.displayName}</Text>
+          <Text style={styles.username}>{currentUser?.userName}</Text>
         </View>
       </View>
 

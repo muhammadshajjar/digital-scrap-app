@@ -22,8 +22,13 @@ import GoogleAuth from "../../components/ui/GoogleAuth";
 import AuthInput from "../../components/ui/AuthInput";
 
 import auth from "@react-native-firebase/auth";
+import firestore from "@react-native-firebase/firestore";
+
+import { setUserProfileInfo } from "../../store/redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
   const {
     control,
@@ -36,16 +41,24 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     const { email, password } = data;
-    return auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        user && router.push("/customers");
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        Alert.alert("Error", errorMessage);
-      });
+    try {
+      const userCredential = await auth().signInWithEmailAndPassword(
+        email,
+        password
+      );
+      const user = userCredential.user;
+      const userData = await firestore()
+        .collection("users")
+        .doc(user?.uid)
+        .get();
+
+      dispatch(setUserProfileInfo(userData.data()));
+
+      user && router.push("/customers");
+    } catch (error) {
+      const errorMessage = error.message;
+      Alert.alert("Error", errorMessage);
+    }
   };
 
   const forgotPasswordHandler = async () => {

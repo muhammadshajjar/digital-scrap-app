@@ -16,11 +16,12 @@ import { CATEGORIESDATA } from "../../../lib/dummyData";
 import { COLORS } from "../../../constants/Colors";
 
 import { Ionicons } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { addSelectedCategory } from "../../../store/redux/sellingSlice";
 
 const SellingHome = () => {
+  const currentUser = useSelector((state) => state.user.personalInfo);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ const SellingHome = () => {
     <View>
       <StatusBar animated={true} barStyle="light-content" />
       <View style={styles.header}>
-        <Text style={styles.headerTxt}>Welcome, User! 👋🏻 </Text>
+        <Text style={styles.headerTxt}>Welcome, {currentUser?.displayName}! 👋🏻 </Text>
       </View>
       <View style={styles.content}>
         <Text style={styles.heroTitle}>Your scrap belongs to?</Text>

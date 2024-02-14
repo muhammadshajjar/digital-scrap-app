@@ -22,6 +22,9 @@ import GoogleAuth from "../../components/ui/GoogleAuth";
 import AuthInput from "../../components/ui/AuthInput";
 
 import auth from "@react-native-firebase/auth";
+import { generateUserName } from "../../helper/utilityFunctions";
+
+import firestore from "@react-native-firebase/firestore";
 
 const Signup = () => {
   const {
@@ -34,21 +37,35 @@ const Signup = () => {
   const password = watch("password", "");
 
   const onSubmit = async (data) => {
+    try {
+      console.log(data);
+      const { firstName, lastName, email, password } = data;
 
-    const { email, password } = data;
-    return auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        router.push("/login");
-      })
-      .catch((error) => {
-        if (error.code === "auth/email-already-in-use") {
-          Alert.alert("That email address is already in use!");
-        }
-        if (error.code === "auth/invalid-email") {
-          Alert.alert("That email address is invalid!");
-        }
-      });
+      const result = await auth().createUserWithEmailAndPassword(
+        email,
+        password
+      );
+
+      const userInfo = {
+        uid: result?.user.uid,
+        userName: generateUserName(result?.user.email),
+        email: result?.user.email,
+        displayName: firstName + " " + lastName,
+      };
+
+      // Add Authenticated User to the list of users
+      await firestore().collection("users").doc(userInfo.uid).set(userInfo);
+
+      router.push("/login");
+    } catch (error) {
+      if (error.code === "auth/email-already-in-use") {
+        Alert.alert("That email address is already in use!");
+      } else if (error.code === "auth/invalid-email") {
+        Alert.alert("That email address is invalid!");
+      } else {
+        Alert.alert("Something went wrong!", error);
+      }
+    }
   };
 
   return (
@@ -56,7 +73,7 @@ const Signup = () => {
       <View style={styles.form}>
         <Text style={styles.heading}>Create Account</Text>
         <ScrollView>
-          <GoogleAuth />
+          <GoogleAuth forSignUp={true} />
           <Text style={styles.alternativeTxt}>Or, register with email...</Text>
           <Controller
             control={control}
