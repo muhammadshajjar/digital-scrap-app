@@ -14,7 +14,6 @@ const CartItem = ({
     <View style={styles.card}>
       <Image
         style={styles.img}
-        // source={require("../../assets/images/anitiquekeys.png")}
         source={{ uri: productData?.pictures[0].url }}
       />
       <View style={styles.contentContainer}>
@@ -26,7 +25,9 @@ const CartItem = ({
           </Text>
         </Text>
         <View style={styles.actionContainer}>
-          <Text style={styles.price}>{productData?.price}</Text>
+          <Text style={styles.price}>
+            {productData?.price.toLocaleString()}
+          </Text>
           <View style={styles.flexRow}>
             <TouchableOpacity
               style={styles.actionBtn}

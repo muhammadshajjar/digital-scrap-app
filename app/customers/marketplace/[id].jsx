@@ -17,6 +17,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { addItemToCart } from "../../../lib/firebase";
 import { useSelector } from "react-redux";
+import { capitalizeFirstLetter } from "../../../helper/utilityFunctions";
 
 const ListingDetail = () => {
   const [addingToCart, setAddingToCart] = useState(false);
@@ -79,13 +80,13 @@ const ListingDetail = () => {
           <View>
             <View style={[styles.rowFlex, { marginBottom: 6 }]}>
               <MaterialIcons name="category" size={24} color="gray" />
-              <Text style={styles.detailsTxt}>{params?.type}</Text>
+              <Text style={styles.detailsTxt}>
+                {capitalizeFirstLetter(params?.type)}
+              </Text>
             </View>
             <View style={styles.rowFlex}>
               <MaterialIcons name="description" size={24} color="gray" />
-              <Text style={styles.detailsTxt}>
-                Vintage (early to mid-20th century)
-              </Text>
+              <Text style={styles.detailsTxt}>{params?.title}</Text>
             </View>
           </View>
         </View>

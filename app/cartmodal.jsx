@@ -18,6 +18,7 @@ import {
   getCartData,
   removeItemFromCart,
 } from "../lib/firebase";
+
 import { useSelector } from "react-redux";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -36,13 +37,69 @@ const CartModal = () => {
 
   const addItemMutation = useMutation({
     mutationFn: addItemToCart,
-    onSuccess: () => {
+    onMutate: async ({ productId, userId }) => {
+      await queryClient.cancelQueries({ queryKey: ["cart", currentUser?.uid] });
+      const previousCartData = queryClient.getQueryData([
+        "cart",
+        currentUser?.uid,
+      ]);
+
+      const itemIndex = previousCartData.findIndex(
+        (item) => item.productId === productId
+      );
+
+      const updatedCartData = [...previousCartData];
+      updatedCartData[itemIndex].quantity += 1;
+
+      queryClient.setQueryData(["cart", currentUser?.uid], updatedCartData);
+
+      return { previousCartData };
+    },
+    onError: (err, { productId }, context) => {
+      queryClient.setQueryData(
+        ["cart", currentUser?.uid],
+        context.previousCartData
+      );
+    },
+
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", currentUser?.uid] });
     },
   });
+
   const removeItemMutation = useMutation({
     mutationFn: removeItemFromCart,
-    onSuccess: () => {
+    onMutate: async ({ productId }) => {
+      await queryClient.cancelQueries({ queryKey: ["cart", currentUser?.uid] });
+
+      const previousCartData = queryClient.getQueryData([
+        "cart",
+        currentUser?.uid,
+      ]);
+
+      const itemIndex = previousCartData.findIndex(
+        (item) => item.productId === productId
+      );
+
+      if (previousCartData[itemIndex].quantity > 1) {
+        const updatedCartData = [...previousCartData];
+        updatedCartData[itemIndex].quantity -= 1;
+        queryClient.setQueryData(["cart", currentUser?.uid], updatedCartData);
+      } else {
+        const updatedCartData = previousCartData.filter(
+          (item) => item.productId !== productId
+        );
+        queryClient.setQueryData(["cart", currentUser?.uid], updatedCartData);
+      }
+      return { previousCartData };
+    },
+    onError: (err, { productId }, context) => {
+      queryClient.setQueryData(
+        ["cart", currentUser?.uid],
+        context.previousCartData
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["cart", currentUser?.uid] });
     },
   });
@@ -65,7 +122,6 @@ const CartModal = () => {
     subTotal = data.reduce((acc, item) => {
       return acc + item.product.price * item.quantity;
     }, 0);
-    console.log(subTotal);
   }
 
   // Total is subtotal plus delivery cost
@@ -117,7 +173,7 @@ const CartModal = () => {
       <View style={styles.calculationContainer}>
         <View style={styles.flexRow}>
           <Text style={styles.totalHeading}>Sub Total</Text>
-          <Text style={styles.pricing}>Rs {subTotal}</Text>
+          <Text style={styles.pricing}>Rs {subTotal.toLocaleString()}</Text>
         </View>
         <View style={styles.flexRow}>
           <Text style={styles.totalHeading}>Delivery cost</Text>
@@ -127,7 +183,7 @@ const CartModal = () => {
 
         <View style={styles.flexRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.pricing}>Rs {total}</Text>
+          <Text style={styles.pricing}>Rs {total.toLocaleString()}</Text>
         </View>
 
         <TouchableOpacity
@@ -165,7 +221,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   pricing: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: "Montserrat-Bold",
   },
 
@@ -175,12 +231,12 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   totalLabel: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: "Montserrat-SemiBold",
   },
   btn: {
     backgroundColor: COLORS.primaryGreen,
-    paddingVertical: 20,
+    paddingVertical: 17,
     borderRadius: 7,
     marginTop: 12,
   },
