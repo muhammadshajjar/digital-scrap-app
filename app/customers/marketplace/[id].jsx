@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 
 import React, { useState } from "react";
@@ -14,10 +15,32 @@ import { COLORS } from "../../../constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
+import { addItemToCart } from "../../../lib/firebase";
+import { useSelector } from "react-redux";
 
 const ListingDetail = () => {
+  const [addingToCart, setAddingToCart] = useState(false);
   const [addToWishList, setAddToWishList] = useState(false);
   const params = useLocalSearchParams();
+  const currentUser = useSelector((state) => state.user.personalInfo);
+
+  const addDataToCartHanlder = async () => {
+    const cartData = {
+      userId: currentUser?.uid,
+      productId: params.id,
+      quantity: 1,
+    };
+
+    try {
+      setAddingToCart(true);
+      await addItemToCart(cartData);
+      setAddingToCart(false);
+      router.back();
+    } catch (e) {
+      setAddingToCart(false);
+      Alert.alert("Error", e.message);
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -87,11 +110,10 @@ const ListingDetail = () => {
             Rs {params?.price}
           </Text>
         </View>
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => router.push("cartmodal")}
-        >
-          <Text style={styles.btnTxt}>Add to cart</Text>
+        <TouchableOpacity style={styles.btn} onPress={addDataToCartHanlder}>
+          <Text style={styles.btnTxt}>
+            {addingToCart ? "Adding..." : "Add to cart"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

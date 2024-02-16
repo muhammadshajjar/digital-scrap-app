@@ -4,6 +4,8 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Link, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -11,10 +13,65 @@ import CartItem from "../components/ui/CartItem";
 
 import { COLORS } from "../constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  addItemToCart,
+  getCartData,
+  removeItemFromCart,
+} from "../lib/firebase";
+import { useSelector } from "react-redux";
+
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 const CartModal = () => {
+  const queryClient = useQueryClient();
   // If the page was reloaded or navigated to directly, then the modal should be presented as
   // a full screen page. You may need to change the UI to account for this.
   const isPresented = router.canGoBack();
+  const currentUser = useSelector((state) => state.user.personalInfo);
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["cart", currentUser?.uid],
+    queryFn: () => getCartData(currentUser?.uid),
+  });
+
+  const addItemMutation = useMutation({
+    mutationFn: addItemToCart,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", currentUser?.uid] });
+    },
+  });
+  const removeItemMutation = useMutation({
+    mutationFn: removeItemFromCart,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart", currentUser?.uid] });
+    },
+  });
+
+  const increaseCartItemQuantity = (productId) => {
+    addItemMutation.mutate({
+      userId: currentUser?.uid,
+      productId,
+      quantity: 1,
+    });
+  };
+  const decreaseCartItemQuantity = (productId) => {
+    removeItemMutation.mutate({ productId, userId: currentUser?.uid });
+  };
+
+  // Pricing Calculations
+
+  let subTotal = 0;
+  if (data) {
+    subTotal = data.reduce((acc, item) => {
+      return acc + item.product.price * item.quantity;
+    }, 0);
+    console.log(subTotal);
+  }
+
+  // Total is subtotal plus delivery cost
+  const deliveryCost = subTotal > 0 ? 500 : 0; // Example delivery cost
+  const total = subTotal + deliveryCost;
+
   return (
     <SafeAreaView
       edges={["bottom"]}
@@ -26,31 +83,57 @@ const CartModal = () => {
       }}
     >
       <View style={{ height: "64%" }}>
-        <FlatList
-        showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ gap: 10 }}
-          data={[...Array(10).keys()]}
-          renderItem={({ item }) => <CartItem />}
-          keyExtractor={(item) => item}
-        />
+        {isPending && (
+          <ActivityIndicator
+            style={{ marginTop: 20 }}
+            size="small"
+            color={COLORS.primaryGreen}
+          />
+        )}
+        {isError && Alert.alert("Error Fetching Marketplace", error?.message)}
+        {data && (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ gap: 10 }}
+            data={data}
+            renderItem={({ item }) => (
+              <CartItem
+                itemData={item}
+                onIncreaseCartQuantity={increaseCartItemQuantity}
+                onDecreaseCartQuantity={decreaseCartItemQuantity}
+              />
+            )}
+            keyExtractor={(item) => item.productId}
+            ListEmptyComponent={
+              <Text
+                style={{ textAlign: "center", marginTop: 20, color: "red" }}
+              >
+                Your Cart is Empty!
+              </Text>
+            }
+          />
+        )}
       </View>
       <View style={styles.calculationContainer}>
         <View style={styles.flexRow}>
           <Text style={styles.totalHeading}>Sub Total</Text>
-          <Text style={styles.pricing}>Rs 6,000</Text>
+          <Text style={styles.pricing}>Rs {subTotal}</Text>
         </View>
         <View style={styles.flexRow}>
           <Text style={styles.totalHeading}>Delivery cost</Text>
-          <Text style={styles.pricing}>Rs 500</Text>
+          <Text style={styles.pricing}>Rs {deliveryCost}</Text>
         </View>
         <View style={styles.sperator}></View>
 
         <View style={styles.flexRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.pricing}>Rs 6,500</Text>
+          <Text style={styles.pricing}>Rs {total}</Text>
         </View>
 
-        <TouchableOpacity style={styles.btn} onPress={()=>router.push("/customers/marketplace/checkout")}>
+        <TouchableOpacity
+          style={styles.btn}
+          onPress={() => router.push("/customers/marketplace/checkout")}
+        >
           <Text style={styles.btnTxt}>Checkout</Text>
         </TouchableOpacity>
       </View>
