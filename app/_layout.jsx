@@ -14,18 +14,9 @@ import { AuthProvider } from "../context/auth-context";
 import { store } from "../store/redux/store";
 import { Provider } from "react-redux";
 
-// import {
-//   useQuery,
-//   useMutation,
-//   useQueryClient,
-//   QueryClient,
-//   QueryClientProvider,
-// } from "react-query";
-// import { useAuthUser } from "@react-query-firebase/auth";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-// import { auth } from "../lib/firebase/config";
-
-// import { router } from "expo-router";
+const queryClient = new QueryClient();
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -41,10 +32,6 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // const { user } = useAuth();
-  // Create a client
-  // const queryClient = new QueryClient();
-
   const [loaded, error] = useFonts({
     "Montserrat-Bold": require("../assets/fonts/Montserrat-Bold.ttf"),
     "Montserrat-SemiBold": require("../assets/fonts/Montserrat-SemiBold.ttf"),
@@ -64,12 +51,6 @@ export default function RootLayout() {
     if (loaded) {
       SplashScreen.hideAsync();
       console.log("App Loaded.");
-
-      // if (user) {
-      //   router.push("/customers");
-      // } else {
-      //   router.push("/");
-      // }
     }
   }, [loaded]);
 
@@ -78,27 +59,16 @@ export default function RootLayout() {
   }
 
   return (
-    // <QueryClientProvider client={queryClient} contextSharing={true}>
-
-    // </QueryClientProvider>
-    <Provider store={store}>
-      <RootLayoutNav />
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <RootLayoutNav />
+      </Provider>
+    </QueryClientProvider>
   );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-
-  // const user = useAuthUser(["user"], auth);
-
-  // useEffect(()=>{
-  //   if(user){
-  //     router.push("/customers/selling");
-  //   }else{
-  //     router.push("/");
-  //   }
-  // },[user])
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

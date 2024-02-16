@@ -13,16 +13,18 @@ import { router } from "expo-router";
 import { COLORS } from "../../../constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { useLocalSearchParams } from "expo-router";
 
 const ListingDetail = () => {
   const [addToWishList, setAddToWishList] = useState(false);
-
+  const params = useLocalSearchParams();
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
           style={styles.img}
-          source={require("../../../assets/images/anitiquekeys.png")}
+          // source={require("../../../assets/images/anitiquekeys.png")}
+          source={{ uri: params?.pictures }}
         />
       </View>
 
@@ -44,9 +46,9 @@ const ListingDetail = () => {
       <View style={styles.contentContainer}>
         <View style={styles.sperator}></View>
         <View style={styles.basicInfo}>
-          <Text style={styles.title}>Antique Keys</Text>
+          <Text style={styles.title}>{params?.title}</Text>
           <View style={styles.rowFlex}>
-            <Text style={styles.ratingTxt}>10/10</Text>
+            <Text style={styles.ratingTxt}>{params?.condition}/10</Text>
           </View>
         </View>
 
@@ -54,7 +56,7 @@ const ListingDetail = () => {
           <View>
             <View style={[styles.rowFlex, { marginBottom: 6 }]}>
               <MaterialIcons name="category" size={24} color="gray" />
-              <Text style={styles.detailsTxt}>Metal</Text>
+              <Text style={styles.detailsTxt}>{params?.type}</Text>
             </View>
             <View style={styles.rowFlex}>
               <MaterialIcons name="description" size={24} color="gray" />
@@ -69,14 +71,7 @@ const ListingDetail = () => {
         <Text style={styles.headingTxt}>Discription</Text>
 
         <ScrollView>
-          <Text style={styles.descriptionTxt}>
-            Unlock the past with this captivating collection of vintage antique
-            keys. This set features a variety of keys, each with its unique
-            style and character. These keys are not only functional but also
-            carry the charm of a bygone era Whether you're a collector or
-            looking for a conversation-starting decor piece, these keys offer a
-            glimpse into history.
-          </Text>
+          <Text style={styles.descriptionTxt}>{params?.description}</Text>
         </ScrollView>
       </View>
       <View style={styles.footer}>
@@ -89,7 +84,7 @@ const ListingDetail = () => {
               color: COLORS.primaryGreen,
             }}
           >
-            Rs 9,000
+            Rs {params?.price}
           </Text>
         </View>
         <TouchableOpacity

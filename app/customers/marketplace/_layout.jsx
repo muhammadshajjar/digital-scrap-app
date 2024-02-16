@@ -16,12 +16,16 @@ import { COLORS } from "./../../../constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { useDispatch } from "react-redux";
+import { setSearchQuery } from "../../../store/redux/marketPlaceSlice";
+import { getMarketPlaceItemByType } from "../../../lib/firebase";
+import { useQuery } from "@tanstack/react-query";
 
-const CustomHeader = ({ setSearchText,navigation }) => {
-
-  const handleSearch = () => {
-    console.log("Searching...");
-  };
+const CustomHeader = ({ setSearchText, navigation }) => {
+  const dispatch = useDispatch();
+  // const handleSearch = () => {
+  //   console.log("Searching...");
+  // };
 
   const handleIconPress = () => {
     router.push("cartmodal");
@@ -62,7 +66,7 @@ const CustomHeader = ({ setSearchText,navigation }) => {
               fontSize: 17,
             }}
             placeholder="What are you looking for?"
-            onChangeText={(text) => setSearchText(text)}
+            onChangeText={(text) => dispatch(setSearchQuery(text))}
           />
         </View>
 
@@ -75,21 +79,32 @@ const CustomHeader = ({ setSearchText,navigation }) => {
 };
 
 const Layout = () => {
-  const [searchText, setSearchText] = useState("");
+  // const [searchText, setSearchText] = useState("");
+  // const dispatch = useDispatch();
+  // console.log(searchText);
+
+  // console.log(searchText);
+
+  // const result = useQuery({
+  //   queryKey: ["marketplace"],
+  //   queryFn: getMarketPlaceItemByType("antique"),
+  // });
+
+  // console.log(result);
+
   return (
     <Stack
       screenOptions={{
-        header: ({ navigation }) => (
-          <CustomHeader navigation={navigation} setSearchText={setSearchText} />
-        ),
+        header: ({ navigation }) => <CustomHeader navigation={navigation} />,
       }}
     >
-      <Stack.Screen name="(tabs)" initialParams={{ searchText }} />
+      {/* <Stack.Screen name="(tabs)" initialParams={{ searchText }} /> */}
+      <Stack.Screen name="index" />
       <Stack.Screen
         name="[id]"
         options={{ headerTitle: "Listing Details", headerShown: false }}
       />
-      <Stack.Screen name="checkout" options={{headerShown:false}} />
+      <Stack.Screen name="checkout" options={{ headerShown: false }} />
     </Stack>
   );
 };

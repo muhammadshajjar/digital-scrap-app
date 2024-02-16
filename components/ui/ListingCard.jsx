@@ -5,13 +5,25 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 
 const ListingCard = ({ listingData }) => {
+  const transformedParamsData = {
+    ...listingData,
+    pictures: listingData?.pictures[0]?.url,
+  };
   return (
     <TouchableOpacity
       style={styles.card}
-      onPress={() => router.push(`/customers/marketplace/${listingData?.id}`)}
+      onPress={() =>
+        router.push({
+          pathname: `/customers/marketplace/${listingData?.id}`,
+          params: transformedParamsData,
+        })
+      }
     >
       <View>
-        <Image source={listingData?.imagePath} style={{ aspectRatio: 3 / 2 }} />
+        <Image
+          source={{ uri: listingData?.pictures[0]?.url }}
+          style={{ aspectRatio: 3 / 2 }}
+        />
       </View>
       <View style={styles.contentContainer}>
         <View style={styles.pricingCont}>
@@ -19,7 +31,9 @@ const ListingCard = ({ listingData }) => {
           <Text style={styles.condition}>{listingData?.condition}/10</Text>
         </View>
         <Text style={styles.title}>{listingData?.title}</Text>
-        <Text style={styles.date}>{listingData?.publishAt}</Text>
+        <Text style={styles.date}>
+          {Math.floor(Math.random() * 10)} days ago
+        </Text>
       </View>
     </TouchableOpacity>
   );
