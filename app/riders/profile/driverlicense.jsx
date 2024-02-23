@@ -6,26 +6,66 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import PhotoCard from "../../../components/ui/PhotoCard";
 import { COLORS } from "../../../constants/Colors";
 
 import { router } from "expo-router";
+import { useSelector } from "react-redux";
+import { updateProfileInfo, getRiderProfile } from "../../../lib/firebase";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isServerFile } from "../../../helper/utilityFunctions";
 
 const PHOTOPLACEHOLDER = require("../../../assets/images/driverlicenseplaceholder.png");
 const Driverlicense = () => {
+  const queryClient = useQueryClient();
   const [driverLicense, setDriverLicense] = useState(null);
   const [licenseNumber, setLicenseNumber] = useState(null);
+  const currentUser = useSelector((state) => state.user.personalInfo);
 
-  const submitDataHanlder = () => {
-    if (!driverLicense || !licenseNumber) {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["riderprofile", currentUser?.uid],
+    queryFn: () => getRiderProfile(currentUser?.uid),
+  });
+
+  //Update data for editing
+
+  useEffect(() => {
+    if (data?.driverLicense) {
+      setDriverLicense(data?.driverLicense?.driverLicense);
+      setLicenseNumber(data?.driverLicense?.licenseNumber);
+    }
+  }, []);
+
+  const driverLicenseMutation = useMutation({
+    mutationFn: updateProfileInfo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["riderprofile", currentUser?.uid],
+      });
+      router.back();
+    },
+  });
+
+  const submitDataHanlder = async () => {
+    if (!isServerFile(driverLicense) || !licenseNumber) {
       Alert.alert("Error", `Please fill all fields`);
       return;
     }
-    router.back();
+    const data = {
+      driverLicense,
+      licenseNumber,
+    };
+    driverLicenseMutation.mutate({
+      userId: currentUser?.uid,
+      infoType: "driverLicense",
+      infoData: data,
+    });
   };
+
   return (
     <View style={styles.container}>
       <PhotoCard
@@ -47,6 +87,13 @@ const Driverlicense = () => {
           />
         </View>
       </View>
+      {driverLicenseMutation.isPending && (
+        <ActivityIndicator
+          style={{ marginTop: 22 }}
+          size="small"
+          color={COLORS.primaryGreen}
+        />
+      )}
       <TouchableOpacity onPress={submitDataHanlder} style={styles.doneBtn}>
         <Text style={styles.doneBtnTxt}>Done</Text>
       </TouchableOpacity>

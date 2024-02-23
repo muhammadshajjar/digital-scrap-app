@@ -1,11 +1,32 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import React from "react";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { COLORS } from "../../../constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { getRiderProfile } from "../../../lib/firebase";
 
 const Verification = () => {
+  const currentUser = useSelector((state) => state.user.personalInfo);
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["riderprofile", currentUser?.uid],
+    queryFn: () => getRiderProfile(currentUser?.uid),
+  });
+
+  if (isError) {
+    Alert.alert("Error", error.message);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -14,11 +35,20 @@ const Verification = () => {
           style={styles.action}
         >
           <View style={styles.flexRow}>
-            <AntDesign
-              name="checkcircle"
-              size={24}
-              color={COLORS.primaryGreen}
-            />
+            {!isPending && (
+              <AntDesign
+                name={`${
+                  data?.basicInfoCompleted !== undefined
+                    ? "checkcircle"
+                    : "checkcircleo"
+                }`}
+                size={24}
+                color={COLORS.primaryGreen}
+              />
+            )}
+            {isPending && (
+              <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            )}
             <Text style={styles.actionTxt}>Basic Info</Text>
           </View>
           <FontAwesome
@@ -33,11 +63,18 @@ const Verification = () => {
           style={styles.action}
         >
           <View style={styles.flexRow}>
-            <AntDesign
-              name="checkcircle"
-              size={24}
-              color={COLORS.primaryGreen}
-            />
+            {!isPending && (
+              <AntDesign
+                name={`${
+                  data?.cnicInfo !== undefined ? "checkcircle" : "checkcircleo"
+                }`}
+                size={24}
+                color={COLORS.primaryGreen}
+              />
+            )}
+            {isPending && (
+              <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            )}
             <Text style={styles.actionTxt}>CNIC</Text>
           </View>
           <FontAwesome
@@ -51,14 +88,22 @@ const Verification = () => {
           style={styles.action}
         >
           <View style={styles.flexRow}>
-            <AntDesign
-              name="checkcircleo"
-              size={24}
-              color={COLORS.primaryGreen}
-            />
+            {!isPending && (
+              <AntDesign
+                name={`${
+                  data?.idConfirmationCompleted !== undefined
+                    ? "checkcircle"
+                    : "checkcircleo"
+                }`}
+                size={24}
+                color={COLORS.primaryGreen}
+              />
+            )}
+            {isPending && (
+              <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            )}
             <Text style={styles.actionTxt}>ID confimation</Text>
           </View>
-
           <FontAwesome
             name="angle-right"
             size={24}
@@ -70,11 +115,20 @@ const Verification = () => {
           style={styles.action}
         >
           <View style={styles.flexRow}>
-            <AntDesign
-              name="checkcircleo"
-              size={24}
-              color={COLORS.primaryGreen}
-            />
+            {!isPending && (
+              <AntDesign
+                name={`${
+                  data?.driverLicenseCompleted !== undefined
+                    ? "checkcircle"
+                    : "checkcircleo"
+                }`}
+                size={24}
+                color={COLORS.primaryGreen}
+              />
+            )}
+            {isPending && (
+              <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            )}
             <Text style={styles.actionTxt}>Driver license</Text>
           </View>
           <FontAwesome
@@ -88,11 +142,20 @@ const Verification = () => {
           style={styles.action}
         >
           <View style={styles.flexRow}>
-            <AntDesign
-              name="checkcircleo"
-              size={24}
-              color={COLORS.primaryGreen}
-            />
+            {!isPending && (
+              <AntDesign
+                name={`${
+                  data?.vehicleInfoCompleted !== undefined
+                    ? "checkcircle"
+                    : "checkcircleo"
+                }`}
+                size={24}
+                color={COLORS.primaryGreen}
+              />
+            )}
+            {isPending && (
+              <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            )}
             <Text style={styles.actionTxt}>Vehical Info</Text>
           </View>
           <FontAwesome

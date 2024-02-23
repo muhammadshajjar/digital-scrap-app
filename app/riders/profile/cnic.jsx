@@ -6,21 +6,56 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLORS } from "../../../constants/Colors";
 import PhotoCard from "../../../components/ui/PhotoCard";
 import { router } from "expo-router";
+import { getRiderProfile, updateProfileInfo } from "../../../lib/firebase";
+import { useSelector } from "react-redux";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import useFileUpload from "../../../hooks/useFileUpload";
+import { isServerFile } from "../../../helper/utilityFunctions";
 
 const PHOTOPLACEHOLDERFRONT = require("../../../assets/images/cnicfrontplaceholder.png");
 const PHOTOPLACEHOLDERBACK = require("../../../assets/images/cnicbackplaceholder.png");
 
-
 const Cnic = () => {
+  const queryClient = useQueryClient();
   const [cnicFront, setCnicFront] = useState(null);
   const [cnicBack, setCnicBack] = useState(null);
   const [cnicnNumber, setCnicNumber] = useState(null);
+  const currentUser = useSelector((state) => state.user.personalInfo);
+  const { uploading, uploadProgress, uploadError, downloadURL, uploadFile } =
+    useFileUpload();
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["riderprofile", currentUser?.uid],
+    queryFn: () => getRiderProfile(currentUser?.uid),
+  });
+
+  //Update data for editing
+
+  useEffect(() => {
+    if (data?.cnicInfo) {
+      setCnicFront(data?.cnicInfo?.cnicFront);
+      setCnicBack(data?.cnicInfo?.cnicBack);
+      setCnicNumber(data?.cnicInfo?.cnicnNumber);
+    }
+  }, []);
+
+  const cnicInfoMutation = useMutation({
+    mutationFn: updateProfileInfo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["riderprofile", currentUser?.uid],
+      });
+      router.back();
+    },
+  });
 
   const cnicNumberInputHandler = (number) => {
     setCnicNumber(() => {
@@ -33,14 +68,24 @@ const Cnic = () => {
     });
   };
 
-  const submitDataHanlder = () => {
-    if (!cnicFront || !cnicBack || !cnicnNumber) {
+  const submitDataHanlder = async () => {
+    if (!isServerFile(cnicFront) || !isServerFile(cnicBack) || !cnicnNumber) {
       Alert.alert("Error", `Please fill all fields`);
       return;
     }
-    router.back();
+    const data = {
+      cnicFront,
+      cnicBack,
+      cnicnNumber,
+    };
+
+    cnicInfoMutation.mutate({
+      userId: currentUser?.uid,
+      infoType: "cnicInfo",
+      infoData: data,
+    });
   };
-  
+
   return (
     <ScrollView style={styles.container}>
       <PhotoCard
@@ -68,6 +113,13 @@ const Cnic = () => {
         </View>
       </View>
 
+      {cnicInfoMutation.isPending && (
+        <ActivityIndicator
+          style={{ marginTop: 22 }}
+          size="small"
+          color={COLORS.primaryGreen}
+        />
+      )}
       <TouchableOpacity onPress={submitDataHanlder} style={styles.doneBtn}>
         <Text style={styles.doneBtnTxt}>Done</Text>
       </TouchableOpacity>

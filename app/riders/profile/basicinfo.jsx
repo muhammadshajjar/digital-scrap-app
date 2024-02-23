@@ -6,8 +6,9 @@ import {
   TextInput,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { COLORS } from "../../../constants/Colors";
 import { useForm, Controller } from "react-hook-form";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -16,11 +17,54 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
+import { getRiderProfile, updateProfileInfo } from "../../../lib/firebase";
+import { useSelector } from "react-redux";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import useFileUpload from "../../../hooks/useFileUpload";
+import { isServerFile } from "../../../helper/utilityFunctions";
 
 const BasicInfo = () => {
+  const queryClient = useQueryClient();
+
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [image, setImage] = useState(null);
+  const [pictureLoading, setPictureLoading] = useState(true);
+
+  const currentUser = useSelector((state) => state.user.personalInfo);
+
+  const { uploading, uploadProgress, uploadError, downloadURL, uploadFile } =
+    useFileUpload();
+
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["riderprofile", currentUser?.uid],
+    queryFn: () => getRiderProfile(currentUser?.uid),
+  });
+
+  useEffect(() => {
+    if (downloadURL) {
+      setImage(downloadURL);
+    }
+  }, [downloadURL]);
+
+  const basicInfoMutation = useMutation({
+    mutationFn: updateProfileInfo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["riderprofile", currentUser?.uid],
+      });
+      router.back();
+    },
+  });
+
+  //Update data for editing
+
+  useEffect(() => {
+    if (data?.basicInfo) {
+      setImage(data?.basicInfo.profilePhoto);
+    }
+  }, []);
 
   const {
     control,
@@ -29,14 +73,27 @@ const BasicInfo = () => {
     setValue,
   } = useForm({
     defaultValues: {
-      name: "",
-      date: "",
-      phonenumber: "",
+      name: data?.basicInfo?.name,
+      date: data?.basicInfo?.dateOfBirth,
+      phonenumber: data?.basicInfo?.phonenumber,
     },
   });
+
   const onSubmit = (data) => {
-    console.log(data);
-    router.back();
+    if (!isServerFile(image)) {
+      Alert.alert("Error", "Picture is not uploaded yet!");
+      return;
+    }
+    basicInfoMutation.mutate({
+      userId: currentUser?.uid,
+      infoType: "basicInfo",
+      infoData: {
+        profilePhoto: image,
+        name: data?.name,
+        dateOfBirth: data?.date,
+        phonenumber: data?.phonenumber,
+      },
+    });
   };
 
   const toggleDatePicker = () => {
@@ -65,6 +122,10 @@ const BasicInfo = () => {
     });
 
     if (!result?.canceled) {
+      uploadFile(
+        result.assets[0].uri,
+        `/profiles/${currentUser?.uid}/profilephoto`
+      );
       setImage(result.assets[0].uri);
     }
   };
@@ -87,16 +148,31 @@ const BasicInfo = () => {
               <Image
                 source={{ uri: image }}
                 style={{ width: "100%", height: "100%", borderRadius: 50 }}
+                onLoad={() => setPictureLoading(false)}
+              />
+            )}
+            {pictureLoading && (
+              <ActivityIndicator
+                size="small"
+                color="white"
+                style={{ position: "absolute", left: 0, right: 0 }}
               />
             )}
           </View>
+          {uploading && (
+            <View style={styles.progressBarContainer}>
+              <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            </View>
+          )}
 
-          <TouchableOpacity
-            onPress={chooseImageHandler}
-            style={styles.addProfileBtn}
-          >
-            <Text style={styles.addProfileTxt}>Add Photo</Text>
-          </TouchableOpacity>
+          {!uploading && (
+            <TouchableOpacity
+              onPress={chooseImageHandler}
+              style={styles.addProfileBtn}
+            >
+              <Text style={styles.addProfileTxt}>Add Photo</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <Controller
@@ -198,6 +274,13 @@ const BasicInfo = () => {
           </Text>
         )}
       </View>
+      {basicInfoMutation.isPending && (
+        <ActivityIndicator
+          style={{ marginTop: 22 }}
+          size="small"
+          color={COLORS.primaryGreen}
+        />
+      )}
       <TouchableOpacity onPress={handleSubmit(onSubmit)} style={styles.doneBtn}>
         <Text style={styles.doneBtnTxt}>Done</Text>
       </TouchableOpacity>
@@ -284,5 +367,10 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-SemiBold",
     fontSize: 16,
     textAlign: "center",
+  },
+  progressBarContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
 });

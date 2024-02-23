@@ -4,32 +4,74 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { COLORS } from "../../../constants/Colors";
 
 import PhotoCard from "../../../components/ui/PhotoCard";
 import { router } from "expo-router";
-
-
+import { useSelector } from "react-redux";
+import { updateProfileInfo, getRiderProfile } from "../../../lib/firebase";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { isServerFile } from "../../../helper/utilityFunctions";
 
 const PHOTOPLACEHOLDER = require("../../../assets/images/imageplaceholder.png");
 const PHOTOPLACEHOLDERFRONT = require("../../../assets/images/vehicalcardfrontplaceholder.png");
 const PHOTOPLACEHOLDERBACK = require("../../../assets/images/vehicalcardbackplaceholder.png");
 
 const Vehicalinfo = () => {
+  const queryClient = useQueryClient();
   const [vehicalPicture, setVehicalPicture] = useState(null);
   const [vehicalCardFront, setVehicalCardFront] = useState(null);
   const [vehicalCardBack, setVehicalCardBack] = useState(null);
+  const currentUser = useSelector((state) => state.user.personalInfo);
 
-  const submitDataHanlder = () => {
-    if (!vehicalCardBack || !vehicalCardFront || !vehicalPicture) {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["riderprofile", currentUser?.uid],
+    queryFn: () => getRiderProfile(currentUser?.uid),
+  });
+
+  //Update data for editing
+
+  useEffect(() => {
+    if (data?.vehicleInfo) {
+      setVehicalPicture(data?.vehicleInfo?.vehicalPicture);
+      setVehicalCardFront(data?.vehicleInfo?.vehicalCardFront);
+      setVehicalCardBack(data?.vehicleInfo?.vehicalCardBack);
+    }
+  }, []);
+
+  const vehicalInfoMutation = useMutation({
+    mutationFn: updateProfileInfo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["riderprofile", currentUser?.uid],
+      });
+      router.back();
+    },
+  });
+
+  const submitDataHanlder = async () => {
+    if (
+      !isServerFile(vehicalCardBack) ||
+      !isServerFile(vehicalCardFront) ||
+      !isServerFile(vehicalPicture)
+    ) {
       Alert.alert("Error", `Please fill all fields`);
       return;
     }
-    router.back();
+    const data = {
+      vehicalPicture,
+      vehicalCardFront,
+      vehicalCardBack,
+    };
+    vehicalInfoMutation.mutate({
+      userId: currentUser?.uid,
+      infoType: "vehicleInfo",
+      infoData: data,
+    });
   };
 
   return (
@@ -52,6 +94,14 @@ const Vehicalinfo = () => {
         onSetPhoto={setVehicalCardBack}
         PHOTOPLACEHOLDER={PHOTOPLACEHOLDERBACK}
       />
+      {vehicalInfoMutation.isPending && (
+        <ActivityIndicator
+          style={{ marginTop: 22 }}
+          size="small"
+          color={COLORS.primaryGreen}
+        />
+      )}
+
       <TouchableOpacity onPress={submitDataHanlder} style={styles.doneBtn}>
         <Text style={styles.doneBtnTxt}>Done</Text>
       </TouchableOpacity>

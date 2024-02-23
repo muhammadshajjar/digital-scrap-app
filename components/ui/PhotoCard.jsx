@@ -1,10 +1,32 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from "react-native";
+import React, { useState, useEffect } from "react";
 
 import * as ImagePicker from "expo-image-picker";
 import { COLORS } from "../../constants/Colors";
+import useFileUpload from "../../hooks/useFileUpload";
+import { useSelector } from "react-redux";
+
 const PhotoCard = ({ title, photo, onSetPhoto, PHOTOPLACEHOLDER }) => {
-  //   const [image, setImage] = useState(null);
+  const [pictureLoading, setPictureLoading] = useState(true);
+  const { uploading, uploadProgress, uploadError, downloadURL, uploadFile } =
+    useFileUpload();
+
+  const currentUser = useSelector((state) => state.user.personalInfo);
+
+  //When DownloadURL is ready set it
+
+  useEffect(() => {
+    if (downloadURL) {
+      onSetPhoto(downloadURL);
+    }
+  }, [downloadURL]);
 
   const chooseImageHandler = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -16,6 +38,10 @@ const PhotoCard = ({ title, photo, onSetPhoto, PHOTOPLACEHOLDER }) => {
 
     if (!result?.canceled) {
       onSetPhoto(result.assets[0].uri);
+      uploadFile(
+        result.assets[0].uri,
+        `/profiles/${currentUser?.uid}/${title.split(" ").join("-")}`
+      );
     }
   };
 
@@ -27,15 +53,33 @@ const PhotoCard = ({ title, photo, onSetPhoto, PHOTOPLACEHOLDER }) => {
           <Image source={PHOTOPLACEHOLDER} style={{ width: 130, height: 80 }} />
         )}
         {photo && (
-          <Image source={{ uri: photo }} style={{ width: 130, height: 80 }} />
+          <Image
+            source={{ uri: photo }}
+            style={{ width: 130, height: 80 }}
+            onLoad={() => setPictureLoading(false)}
+          />
+        )}
+        {pictureLoading && (
+          <ActivityIndicator
+            size="small"
+            color={COLORS.primaryGreen}
+            style={{ position: "absolute", left: 0, right: 0 }}
+          />
         )}
       </View>
-      <TouchableOpacity
-        onPress={chooseImageHandler}
-        style={styles.addProfileBtn}
-      >
-        <Text style={styles.addProfileTxt}>Add Photo</Text>
-      </TouchableOpacity>
+      {!uploading && (
+        <TouchableOpacity
+          onPress={chooseImageHandler}
+          style={styles.addProfileBtn}
+        >
+          <Text style={styles.addProfileTxt}>Add Photo</Text>
+        </TouchableOpacity>
+      )}
+      {uploading && (
+        <View style={styles.progressBarContainer}>
+          <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+        </View>
+      )}
     </View>
   );
 };
@@ -82,5 +126,11 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Medium",
     color: COLORS.primaryGreen,
     textAlign: "center",
+  },
+  progressBarContainer: {
+    // Styles for the progress bar container
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
   },
 });

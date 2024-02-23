@@ -1,5 +1,12 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { COLORS } from "../../../constants/Colors";
 import { router } from "expo-router";
 
@@ -8,6 +15,9 @@ import {
   useCameraPermissions,
   PermissionStatus,
 } from "expo-image-picker";
+import { useSelector } from "react-redux";
+import { updateProfileInfo, getRiderProfile } from "../../../lib/firebase";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const PICTURETAKINGSTEPS = [
   "The photo should clearly show the face and your drivers license",
@@ -16,12 +26,44 @@ const PICTURETAKINGSTEPS = [
 ];
 
 const Idverification = () => {
+  const queryClient = useQueryClient();
   const [image, setImage] = useState(null);
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
+  const currentUser = useSelector((state) => state.user.personalInfo);
 
-  const submitDataHanlder = () => {
-    router.back();
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["riderprofile", currentUser?.uid],
+    queryFn: () => getRiderProfile(currentUser?.uid),
+  });
+
+  //Update data for editing
+
+  useEffect(() => {
+    if (data?.idConfirmation) {
+      setImage(data?.idConfirmation?.selfie);
+    }
+  }, []);
+
+  const idInfoMutation = useMutation({
+    mutationFn: updateProfileInfo,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["riderprofile", currentUser?.uid],
+      });
+      router.back();
+    },
+  });
+
+  const submitDataHanlder = async () => {
+    const data = {
+      selfie: image,
+    };
+    idInfoMutation.mutate({
+      userId: currentUser?.uid,
+      infoType: "idConfirmation",
+      infoData: data,
+    });
   };
 
   const verifyPermission = async () => {
@@ -88,6 +130,13 @@ const Idverification = () => {
           ))}
         </View>
       </View>
+      {idInfoMutation.isPending && (
+        <ActivityIndicator
+          style={{ marginTop: 22 }}
+          size="small"
+          color={COLORS.primaryGreen}
+        />
+      )}
       <TouchableOpacity onPress={submitDataHanlder} style={styles.doneBtn}>
         <Text style={styles.doneBtnTxt}>Done</Text>
       </TouchableOpacity>

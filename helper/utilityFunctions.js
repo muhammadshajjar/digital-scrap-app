@@ -30,3 +30,7 @@ export const capitalizeFirstLetter = (word) => {
   }
   return word;
 };
+
+export const isServerFile = (path) => {
+  return path.startsWith("http://") || path.startsWith("https://");
+};
