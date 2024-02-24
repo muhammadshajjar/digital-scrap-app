@@ -1,14 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React from "react";
+import FAQAccordion from "../../../components/ui/FAQAccordion";
+import { FAQSCUSTOMERS } from "../../../lib/dummyData";
 
 const HelpCenter = () => {
-  return (
-    <View>
-      <Text>helpcenter</Text>
-    </View>
-  )
-}
+  return <FAQAccordion FAQS={FAQSCUSTOMERS} />;
+};
 
-export default HelpCenter
-
-const styles = StyleSheet.create({})
+export default HelpCenter;
