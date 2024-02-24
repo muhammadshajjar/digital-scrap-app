@@ -1,10 +1,19 @@
-import { StyleSheet, Text, View, Link, TouchableOpacity } from "react-native";
-import React from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Link,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import React, { useState } from "react";
 
 import { Image } from "expo-image";
 import { router } from "expo-router";
+import { COLORS } from "../../constants/Colors";
 
 const ListingCard = ({ listingData }) => {
+  const [pictureLoading, setPictureLoading] = useState(true);
   const transformedParamsData = {
     ...listingData,
     pictures: listingData?.pictures[0]?.url,
@@ -23,7 +32,15 @@ const ListingCard = ({ listingData }) => {
         <Image
           source={{ uri: listingData?.pictures[0]?.url }}
           style={{ aspectRatio: 3 / 2 }}
+          onLoad={() => setPictureLoading(false)}
         />
+        {pictureLoading && (
+          <ActivityIndicator
+            size="small"
+            color={COLORS.primaryGreen}
+            style={styles.activityIndicator}
+          />
+        )}
       </View>
       <View style={styles.contentContainer}>
         <View style={styles.pricingCont}>
@@ -54,6 +71,16 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 10,
+  },
+  activityIndicator: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.primaryBg,
   },
   pricingCont: {
     flexDirection: "row",

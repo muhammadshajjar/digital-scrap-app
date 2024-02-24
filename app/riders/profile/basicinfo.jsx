@@ -159,7 +159,7 @@ const BasicInfo = () => {
               />
             )}
           </View>
-          {uploading && (
+          {image && uploading && (
             <View style={styles.progressBarContainer}>
               <ActivityIndicator size="small" color={COLORS.primaryGreen} />
             </View>

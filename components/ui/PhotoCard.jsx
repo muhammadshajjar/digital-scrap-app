@@ -59,7 +59,7 @@ const PhotoCard = ({ title, photo, onSetPhoto, PHOTOPLACEHOLDER }) => {
             onLoad={() => setPictureLoading(false)}
           />
         )}
-        {pictureLoading && (
+        {photo && pictureLoading && (
           <ActivityIndicator
             size="small"
             color={COLORS.primaryGreen}

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 
 import React, { useState } from "react";
@@ -22,6 +23,7 @@ import { capitalizeFirstLetter } from "../../../helper/utilityFunctions";
 const ListingDetail = () => {
   const [addingToCart, setAddingToCart] = useState(false);
   const [addToWishList, setAddToWishList] = useState(false);
+  const [pictureLoading, setPictureLoading] = useState(true);
   const params = useLocalSearchParams();
   const currentUser = useSelector((state) => state.user.personalInfo);
 
@@ -42,14 +44,23 @@ const ListingDetail = () => {
       Alert.alert("Error", e.message);
     }
   };
+
+  console.log(pictureLoading ? "Loading" : "Loadedƒ");
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <Image
           style={styles.img}
-          // source={require("../../../assets/images/anitiquekeys.png")}
           source={{ uri: params?.pictures }}
+          onLoad={() => setPictureLoading(false)}
         />
+        {pictureLoading && (
+          <ActivityIndicator
+            size="small"
+            color={COLORS.primaryGreen}
+            style={styles.activityIndicator}
+          />
+        )}
       </View>
 
       <View style={styles.actionsContainer}>
@@ -128,11 +139,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   imageContainer: {
+    position: "relative",
+    width: "100%",
     height: "50%",
   },
   img: {
     height: "100%",
     width: "100%",
+  },
+  activityIndicator: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.primaryBg,
   },
   actionsContainer: {
     flexDirection: "row",
