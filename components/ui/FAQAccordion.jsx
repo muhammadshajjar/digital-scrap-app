@@ -11,7 +11,6 @@ import { Entypo } from "@expo/vector-icons";
 import { EMAIL } from "../../lib/dummyData";
 
 const FAQAccordion = ({ FAQS }) => {
-  console.log(FAQS);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
   const toggleAccordion = (index) => {
