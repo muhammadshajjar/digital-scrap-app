@@ -57,6 +57,12 @@
             "deploymentTarget": "13.0"
           }
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "enableGooglePay": true
+        }
       ]
     ],
     "experiments": {

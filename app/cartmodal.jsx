@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import CartItem from "../components/ui/CartItem";
 
 import { COLORS } from "../constants/Colors";
+import { STRIPE_FIREBASE_SERVER } from "../constants/EndPoints";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   addItemToCart,
@@ -22,9 +23,11 @@ import {
 import { useSelector } from "react-redux";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useStripe } from "@stripe/stripe-react-native";
 
 const CartModal = () => {
   const queryClient = useQueryClient();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   // If the page was reloaded or navigated to directly, then the modal should be presented as
   // a full screen page. You may need to change the UI to account for this.
   const isPresented = router.canGoBack();
@@ -128,6 +131,44 @@ const CartModal = () => {
   const deliveryCost = subTotal > 0 ? 500 : 0; // Example delivery cost
   const total = subTotal + deliveryCost;
 
+  const checkoutCartHandler = async () => {
+    try {
+      const response = await fetch(STRIPE_FIREBASE_SERVER, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: Math.floor((total / 280) * 100), //For now integrated stripe as it doesn't accept pkr that is why converted PKR to dollar first..
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const responseData = await response.json();
+
+      const initResponse = await initPaymentSheet({
+        merchantDisplayName: "Digital-Scrap",
+        paymentIntentClientSecret: responseData.paymentIntent,
+      });
+      if (initResponse?.error) {
+        console.log(initResponse?.error);
+        Alert.alert("Something Went Wront!", initResponse?.error?.message);
+        return;
+      }
+
+      const paymentRespnose = await presentPaymentSheet();
+      if (paymentRespnose?.error) {
+        Alert.alert(`Payment Error`, paymentRespnose?.error?.message);
+      }
+      router.push("/customers/marketplace/checkout");
+    } catch (error) {
+      console.error("There was a problem with your fetch operation:", error);
+    }
+  };
+
   return (
     <SafeAreaView
       edges={["bottom"]}
@@ -186,10 +227,7 @@ const CartModal = () => {
           <Text style={styles.pricing}>Rs {total.toLocaleString()}</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => router.push("/customers/marketplace/checkout")}
-        >
+        <TouchableOpacity style={styles.btn} onPress={checkoutCartHandler}>
           <Text style={styles.btnTxt}>Checkout</Text>
         </TouchableOpacity>
       </View>

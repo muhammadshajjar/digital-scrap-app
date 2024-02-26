@@ -18,6 +18,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
+import { StripeProvider } from "@stripe/stripe-react-native";
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -61,7 +63,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <RootLayoutNav />
+        <StripeProvider publishableKey="pk_test_51Oo4faJXshafLR3ug5NcXOKEXbnW9J1UIRa3b4WUPVXs4iVOh8gG2e56htZLLRCWJMHAIUi42vzbZ28IXgj1lbOo00dsvNOzvu">
+          <RootLayoutNav />
+        </StripeProvider>
       </Provider>
     </QueryClientProvider>
   );
