@@ -20,8 +20,8 @@ const stripe = require("stripe")(
 exports.completePaymentWithStripe = onRequest(async (req, res) => {
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: req.body.amount,
-      currency: "usd",
+      amount: Math.floor(req.body.amount * 100),
+      currency: "pkr",
       automatic_payment_methods: {
         enabled: true,
       },

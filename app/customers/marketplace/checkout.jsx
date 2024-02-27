@@ -8,9 +8,10 @@ import { router } from "expo-router";
 const Checkout = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.primaryBg }}>
+      <Text style={styles.title}>Your Order Placed Successfully!</Text>
       <View style={{ height: "70%" }}>
         <LottieView
-          source={require("../../../assets/lottie/orderplaced.json")}
+          source={require("../../../assets/lottie/done.json")}
           autoPlay
           loop
           style={{ height: "100%", width: "100%" }}
@@ -44,5 +45,12 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-SemiBold",
     fontSize: 16,
     textAlign: "center",
+  },
+  title: {
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 22,
+    textAlign: "center",
+    marginVertical: 10,
+    lineHeight: 30,
   },
 });

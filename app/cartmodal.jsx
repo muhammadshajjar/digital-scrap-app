@@ -17,6 +17,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import {
   addItemToCart,
   getCartData,
+  removeCartForUser,
   removeItemFromCart,
 } from "../lib/firebase";
 
@@ -107,6 +108,16 @@ const CartModal = () => {
     },
   });
 
+  const emptyCartMutation = useMutation({
+    mutationFn: removeCartForUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart", currentUser?.uid],
+      });
+      router.push("/customers/marketplace/checkout");
+    },
+  });
+
   const increaseCartItemQuantity = (productId) => {
     addItemMutation.mutate({
       userId: currentUser?.uid,
@@ -139,7 +150,7 @@ const CartModal = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: Math.floor((total / 280) * 100), //For now integrated stripe as it doesn't accept pkr that is why converted PKR to dollar first..
+          amount: total,
         }),
       });
 
@@ -162,8 +173,16 @@ const CartModal = () => {
       const paymentRespnose = await presentPaymentSheet();
       if (paymentRespnose?.error) {
         Alert.alert(`Payment Error`, paymentRespnose?.error?.message);
+        return;
+      } else {
+        //On Successful payment
+        emptyCartMutation.mutate({
+          userId: currentUser?.uid,
+        });
       }
-      router.push("/customers/marketplace/checkout");
+      emptyCartMutation.mutate({
+        userId: currentUser?.uid,
+      });
     } catch (error) {
       console.error("There was a problem with your fetch operation:", error);
     }
