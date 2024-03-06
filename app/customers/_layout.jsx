@@ -73,9 +73,9 @@ const CustomerFlowLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="news"
+        name="blogs"
         options={{
-          tabBarLabel: "News",
+          tabBarLabel: "Blogs",
           tabBarIcon: ({ focused }) => (
             <View style={styles.tabBarButtonIcon}>
               <Ionicons
@@ -83,7 +83,7 @@ const CustomerFlowLayout = () => {
                 size={24}
                 color={focused ? "#42A554" : "#9DB2CE"}
               />
-              {focused && <Text style={styles.label}>News</Text>}
+              {focused && <Text style={styles.label}>Blogs</Text>}
             </View>
           ),
         }}
