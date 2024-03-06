@@ -1,16 +1,10 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-
+import { StyleSheet, Text, View, FlatList } from "react-native";
 
 import { getAllBlogs } from "../../../lib/firebase";
-import { Link } from "expo-router";
 
-import {
-  useQuery,
-} from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
+import BlogCard from "../../../components/ui/BlogCard";
+import { COLORS } from "../../../constants/Colors";
 
 const Blogs = () => {
   const { isPending, isError, data, error } = useQuery({
@@ -27,12 +21,31 @@ const Blogs = () => {
   }
 
   return (
-    <View>
-      <Link href="/customers/blogs/1">Read More</Link>
+    <View style={styles.container}>
+      <Text style={styles.title}>The Latest From Our Publications 📚</Text>
+      <FlatList
+        data={data}
+        renderItem={({ item }) => <BlogCard blogPost={item}/>}
+        keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 };
 
 export default Blogs;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.primaryBg,
+    padding: 10,
+  },
+  title:{
+    fontFamily:"Montserrat-SemiBold",
+    fontSize:20,
+    textAlign: "center",
+    padding:12,
+    
+  }
+});
