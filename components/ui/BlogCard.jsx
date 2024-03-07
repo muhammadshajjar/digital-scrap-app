@@ -6,20 +6,26 @@ import { Link } from "expo-router";
 import { COLORS } from "../../constants/Colors";
 
 const BlogCard = ({ blogPost }) => {
+  const transformedParamsData = {
+    ...blogPost,
+    picture: blogPost?.thumbnail[0]?.url,
+  };
+
   return (
     <View style={styles.card}>
-      <Image
-        source={{ uri: blogPost?.thumbnail[0]?.url }}
-        style={styles.img}
-      />
+      <Image source={{ uri: blogPost?.thumbnail[0]?.url }} style={styles.img} />
       <View style={styles.content}>
-        <Text style={styles.title}>
-          {blogPost?.title}
-        </Text>
+        <Text style={styles.title}>{blogPost?.title}</Text>
         <View style={styles.action}>
           <Text style={styles.dateTxt}>{blogPost?.postDate}</Text>
-          <Link href="/customers/blogs/1" style={styles.readmoreTxt}>
-            Read More
+          <Link
+            style={styles.readmoreTxt}
+            href={{
+              pathname: `/customers/blogs/${blogPost?.uid}`,
+              params: transformedParamsData,
+            }}
+          >
+            Read more
           </Link>
         </View>
       </View>
@@ -51,11 +57,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   content: {
-    width: "67%",
+    width: "65%",
   },
   title: {
     fontFamily: "Montserrat-SemiBold",
-    fontSize: 18,
+    fontSize: 16,
   },
   action: {
     flexDirection: "row",
@@ -70,6 +76,7 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Medium",
     textDecorationLine: "underline",
     color: COLORS.primaryGreen,
-    fontSize: 16,
+    fontSize: 15,
+    paddingRight: 6,
   },
 });

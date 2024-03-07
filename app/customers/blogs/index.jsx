@@ -23,12 +23,14 @@ const Blogs = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>The Latest From Our Publications 📚</Text>
-      <FlatList
-        data={data}
-        renderItem={({ item }) => <BlogCard blogPost={item}/>}
-        keyExtractor={(item, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-      />
+      <View style={{height:"78%"}}>
+        <FlatList
+          data={data}
+          renderItem={({ item }) => <BlogCard blogPost={item} />}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </View>
   );
 };
@@ -41,11 +43,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primaryBg,
     padding: 10,
   },
-  title:{
-    fontFamily:"Montserrat-SemiBold",
-    fontSize:20,
+  title: {
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 20,
     textAlign: "center",
-    padding:12,
-    
-  }
+    padding: 12,
+  },
 });
