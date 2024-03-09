@@ -63,6 +63,18 @@
         {
           "enableGooglePay": true
         }
+      ],
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsDownloadToken": "sk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdGg4b2QzbTAyZ2wycXM0dmt3eDhseWoifQ.1av_D8BmHf6oed98klKJNA"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Show current location on map."
+        }
       ]
     ],
     "experiments": {

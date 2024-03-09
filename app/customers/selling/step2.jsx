@@ -1,14 +1,5 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  Platform,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
-import SellingFormSteps from "../../../components/ui/SellingFormSteps";
 
 import { useIsFocused } from "@react-navigation/native";
 
@@ -17,218 +8,79 @@ import { changeProgress } from "../../../store/redux/sellingSlice";
 
 import SellingFromStepsBtn from "../../../components/ui/SellingFormStepsBtn";
 
-import DateTimePicker from "@react-native-community/datetimepicker";
-
-import { useForm, Controller } from "react-hook-form";
 import { COLORS } from "../../../constants/Colors";
 
-import { AntDesign } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { MapView, UserLocation, Camera, PointAnnotation } from "@rnmapbox/maps";
+import Mapbox from "@rnmapbox/maps";
+
+
+import { FontAwesome5 } from "@expo/vector-icons";
+
+Mapbox.setAccessToken(
+  "pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w"
+);
 
 const Step2 = () => {
+  const [viewPort, setViewPort] = useState(null);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
-  const [date, setDate] = useState(new Date());
-  const [time, setTime] = useState(new Date());
-
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimepicker, setShowTimepicker] = useState(false);
 
   useEffect(() => {
     isFocused && dispatch(changeProgress(2));
   }, [isFocused]);
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm({
-    defaultValues: {
-      date: "",
-      time: "",
-      weight: "",
-    },
-  });
-  const onSubmit = (data) => {
-    const { date, time, weight } = data;
+
+  const handleSubmit = () => {
     router.push("/customers/selling/step3");
   };
 
-  const toggleDatePicker = () => {
-    setShowDatePicker(!showDatePicker);
-  };
-  const toggleTimePicker = () => {
-    setShowTimepicker(!showTimepicker);
-    setShowDatePicker(false);
-  };
-  const dateChangeHandler = ({ type }, selectedDate) => {
-    if (type === "set") {
-      const currentDate = selectedDate;
-      setValue("date", currentDate, { shouldValidate: true });
-      setDate(currentDate);
-
-      if (Platform.OS === "android") {
-        toggleDatePicker();
-      }
-    } else {
-      toggleDatePicker();
-    }
-  };
-
-  const timeChangeHandler = ({ type }, selectedTime) => {
-    if (type === "set") {
-      const currentTime = selectedTime;
-      setValue("time", currentTime, { shouldValidate: true });
-      setTime(currentTime);
-      if (Platform.OS === "android") {
-        toggleTimePicker();
-      }
-    } else {
-      toggleTimePicker();
-    }
+  const dragMarkerHandler = (e) => {
+    console.log(e?.geometry?.coordinates);
+    const [lat, lng] = e?.geometry?.coordinates;
+    setViewPort({
+      lat,
+      lng,
+    });
   };
 
   return (
     <View style={styles.container}>
-      <SellingFormSteps />
-      <View style={styles.formContainer}>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={styles.labelTxt}>Schedule Date</Text>
-              <View style={styles.fieldContainer}>
-                <TouchableOpacity
-                  onPress={toggleDatePicker}
-                  style={{ width: "80%" }}
-                >
-                  <TextInput
-                    placeholder="12/10/2023"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={date.toLocaleDateString()}
-                    pointerEvents="none"
-                    editable={false}
-                    style={styles.pickerField}
-                  />
-                </TouchableOpacity>
-                <AntDesign
-                  name="calendar"
-                  size={34}
-                  color={COLORS.primaryGreen}
-                  onPress={toggleDatePicker}
-                />
-              </View>
+      <Text style={styles.title}>Drop pin at exact location 📍</Text>
+      <View style={{ height: "80%", width: "100%" }}>
+        <MapView
+          style={styles.map}
+          setAccessToken="pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w"
+        >
+          <Camera
+            zoomLevel={15}
+            centerCoordinate={[73.0288, 33.7156]}
+            pitch={60}
+            animationMode="flyTo"
+            animationDuration={6000}
+            // followUserLocation={true}
+          />
 
-              {showDatePicker && (
-                <DateTimePicker
-                  id="34t34"
-                  mode="date"
-                  value={time}
-                  onChange={dateChangeHandler}
-                  display="spinner"
-                  themeVariant="light"
-                  minimumDate={new Date()}
-                />
-              )}
-            </>
-          )}
-          name="date"
-        />
-        {errors.date && (
-          <Text style={styles.feedbackTxt}>Please select date!</Text>
-        )}
-
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={styles.labelTxt}>Schedule Time</Text>
-              <View style={styles.fieldContainer}>
-                <TouchableOpacity
-                  onPress={toggleTimePicker}
-                  style={{ width: "80%" }}
-                >
-                  <TextInput
-                    placeholder="10: 35 am"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={time.toLocaleTimeString()}
-                    pointerEvents="none"
-                    editable={false}
-                    style={styles.pickerField}
-                  />
-                </TouchableOpacity>
-                <AntDesign
-                  name="clockcircleo"
-                  size={34}
-                  color={COLORS.primaryGreen}
-                  onPress={toggleTimePicker}
-                />
-              </View>
-
-              {showTimepicker && (
-                <DateTimePicker
-                  id="232342"
-                  mode="time"
-                  value={time}
-                  onChange={timeChangeHandler}
-                  display="inline"
-                />
-              )}
-            </>
-          )}
-          name="time"
-        />
-        {errors.time && (
-          <Text style={styles.feedbackTxt}>Please select time!</Text>
-        )}
-
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <>
-              <Text style={styles.labelTxt}>Approx. Weight</Text>
-              <View style={[styles.fieldContainer]}>
-                <TextInput
-                  placeholder="/kg"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  style={[styles.pickerField, { width: "80%" }]}
-                  keyboardType="numeric"
-                />
-
-                <MaterialCommunityIcons
-                  name="weight-kilogram"
-                  size={34}
-                  color={COLORS.primaryGreen}
-                />
-              </View>
-            </>
-          )}
-          name="weight"
-        />
-        {errors.weight && (
-          <Text style={styles.feedbackTxt}>Please enter approx. weight!</Text>
-        )}
+          <PointAnnotation
+            id="marker"
+            coordinate={[73.0288, 33.7156]}
+            draggable={true}
+            onDragEnd={dragMarkerHandler}
+          >
+            <View>
+              <FontAwesome5
+                name="map-marker-alt"
+                size={30}
+                color={COLORS.primaryGreen}
+              />
+            </View>
+          </PointAnnotation>
+          <UserLocation />
+        </MapView>
       </View>
-
       <SellingFromStepsBtn
-        fPath="/customers/selling/step3"
         bPath="/customers/selling/form"
-        onSubmitCallback={handleSubmit(onSubmit)}
+        onSubmitCallback={handleSubmit}
       />
     </View>
   );
@@ -270,5 +122,14 @@ const styles = StyleSheet.create({
   feedbackTxt: {
     marginTop: 5,
     color: "red",
+  },
+  map: {
+    flex: 1,
+  },
+  title: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
   },
 });
