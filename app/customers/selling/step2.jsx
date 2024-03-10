@@ -1,10 +1,10 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 
 import { useIsFocused } from "@react-navigation/native";
 
 import { useDispatch } from "react-redux";
-import { changeProgress } from "../../../store/redux/sellingSlice";
+import { changeProgress, setFormData } from "../../../store/redux/sellingSlice";
 
 import SellingFromStepsBtn from "../../../components/ui/SellingFormStepsBtn";
 
@@ -13,7 +13,6 @@ import { COLORS } from "../../../constants/Colors";
 import { router } from "expo-router";
 import { MapView, UserLocation, Camera, PointAnnotation } from "@rnmapbox/maps";
 import Mapbox from "@rnmapbox/maps";
-
 
 import { FontAwesome5 } from "@expo/vector-icons";
 
@@ -30,9 +29,16 @@ const Step2 = () => {
     isFocused && dispatch(changeProgress(2));
   }, [isFocused]);
 
-
   const handleSubmit = () => {
-    router.push("/customers/selling/step3");
+    if (viewPort) {
+      dispatch(setFormData({ lat: viewPort?.lat, lng: viewPort?.lng }));
+      router.push("/customers/selling/step3");
+    } else {
+      Alert.alert(
+        "Can't Find exact location",
+        "Please use marker to pin your exact location"
+      );
+    }
   };
 
   const dragMarkerHandler = (e) => {

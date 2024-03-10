@@ -12,14 +12,14 @@ import SellingFormSteps from "../../../components/ui/SellingFormSteps";
 
 import { useIsFocused } from "@react-navigation/native";
 
-import { useDispatch } from "react-redux";
-import { changeProgress } from "../../../store/redux/sellingSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { changeProgress, setFormData } from "../../../store/redux/sellingSlice";
 
 import SellingFromStepsBtn from "../../../components/ui/SellingFormStepsBtn";
 
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, Form } from "react-hook-form";
 import { COLORS } from "../../../constants/Colors";
 
 import { AntDesign } from "@expo/vector-icons";
@@ -29,6 +29,7 @@ import { router } from "expo-router";
 const Step2 = () => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+  const formData = useSelector((state) => state.selling.formData);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
 
@@ -38,6 +39,8 @@ const Step2 = () => {
   useEffect(() => {
     isFocused && dispatch(changeProgress(1));
   }, [isFocused]);
+
+  console.log(formData);
 
   const {
     control,
@@ -53,6 +56,14 @@ const Step2 = () => {
   });
   const onSubmit = (data) => {
     const { date, time, weight } = data;
+
+    const transformedData = {
+      date: date.toLocaleDateString(),
+      time: time.toLocaleTimeString(),
+      weight,
+    };
+
+    dispatch(setFormData(transformedData));
     router.push("/customers/selling/step2");
   };
 

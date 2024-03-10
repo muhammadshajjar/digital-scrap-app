@@ -1,11 +1,19 @@
-import { StyleSheet, Text, View, Pressable, Alert, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import SellingFormSteps from "../../../components/ui/SellingFormSteps";
 
 import { useIsFocused } from "@react-navigation/native";
 
-import { useDispatch } from "react-redux";
-import { changeProgress } from "../../../store/redux/sellingSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { changeProgress, setFormData } from "../../../store/redux/sellingSlice";
 
 import SellingFromStepsBtn from "../../../components/ui/SellingFormStepsBtn";
 import { COLORS } from "../../../constants/Colors";
@@ -18,11 +26,16 @@ import {
 } from "expo-image-picker";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
+import useFileUpload from "../../../hooks/useFileUpload";
 
 const Step3 = () => {
   const [image, setImage] = useState(null);
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
+  const { uploading, uploadProgress, uploadError, downloadURL, uploadFile } =
+    useFileUpload();
+
+  const currentUser = useSelector((state) => state.user.personalInfo);
 
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
@@ -30,6 +43,12 @@ const Step3 = () => {
     isFocused && dispatch(changeProgress(3));
   }, [isFocused]);
 
+  useEffect(() => {
+    if (downloadURL) {
+      Alert.alert("Successfully Uploaded");
+      setImage(downloadURL);
+    }
+  }, [downloadURL]);
 
   const verifyPermission = async () => {
     if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
@@ -59,7 +78,13 @@ const Step3 = () => {
       quality: 0.5,
     });
 
-    setImage(result?.assets[0].uri);
+    if (!result?.canceled) {
+      uploadFile(
+        result.assets[0].uri,
+        `/scedules/${currentUser?.uid}/${new Date().toISOString()}`
+      );
+      setImage(result.assets[0].uri);
+    }
   };
 
   const chooseImageHandler = async () => {
@@ -71,19 +96,27 @@ const Step3 = () => {
     });
 
     if (!result?.canceled) {
+      uploadFile(
+        result.assets[0].uri,
+        `/scedules/${currentUser?.uid}/${new Date().toISOString()}`
+      );
       setImage(result.assets[0].uri);
     }
   };
 
-
   const handleSubmit = () => {
     if (!image) {
-      Alert.alert("Error","Please select or take picture of your scrap material to proceed");
+      Alert.alert(
+        "Error",
+        "Please select or take picture of your scrap material to proceed"
+      );
       return false;
     } else {
+      dispatch(setFormData({ downloadURL }));
       router.push("/customers/selling/final");
     }
   };
+
   return (
     <View style={styles.container}>
       <SellingFormSteps />
@@ -100,9 +133,16 @@ const Step3 = () => {
             />
           )}
         </View>
-        <Pressable onPress={chooseImageHandler} style={styles.uploadBtn}>
-          <Text style={styles.uploadBtnTxt}>Upload pictures</Text>
-        </Pressable>
+        {image && uploading && (
+          <View style={styles.progressBarContainer}>
+            <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+          </View>
+        )}
+        {!uploading && (
+          <Pressable onPress={chooseImageHandler} style={styles.uploadBtn}>
+            <Text style={styles.uploadBtnTxt}>Upload pictures</Text>
+          </Pressable>
+        )}
         <Text style={styles.orTxt}>OR</Text>
         <Pressable onPress={takePictureHandler} style={styles.cameraBtn}>
           <Entypo name="camera" size={24} color="white" />
@@ -167,5 +207,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 50,
     marginVertical: 18,
+  },
+  progressBarContainer: {
+    marginBottom: 20,
   },
 });
