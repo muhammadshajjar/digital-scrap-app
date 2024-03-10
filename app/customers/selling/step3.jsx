@@ -27,6 +27,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import useFileUpload from "../../../hooks/useFileUpload";
+import { setPickupSchedule } from "../../../lib/firebase";
 
 const Step3 = () => {
   const [image, setImage] = useState(null);
@@ -36,6 +37,7 @@ const Step3 = () => {
     useFileUpload();
 
   const currentUser = useSelector((state) => state.user.personalInfo);
+  const formData = useSelector((state) => state.selling.formData);
 
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
@@ -105,16 +107,25 @@ const Step3 = () => {
   };
 
   const handleSubmit = () => {
-    if (!image) {
-      Alert.alert(
-        "Error",
-        "Please select or take picture of your scrap material to proceed"
-      );
-      return false;
-    } else {
+    // if (!image) {
+    //   Alert.alert(
+    //     "Error",
+    //     "Please select or take picture of your scrap material to proceed"
+    //   );
+    //   return false;
+    // } else {
       dispatch(setFormData({ downloadURL }));
-      router.push("/customers/selling/final");
-    }
+
+      const pickUpdata = {
+        ...formData,
+        downloadURL,
+        customerId: currentUser?.uid,
+      };
+
+      setPickupSchedule(pickUpdata);
+
+      // router.push("/customers/selling/final");
+    // }
   };
 
   return (
