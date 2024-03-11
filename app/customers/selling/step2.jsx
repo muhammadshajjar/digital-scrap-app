@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Alert } from "react-native";
+import { StyleSheet, View, Text, Alert, TextInput } from "react-native";
 import React, { useEffect, useState } from "react";
 
 import { useIsFocused } from "@react-navigation/native";
@@ -22,6 +22,7 @@ Mapbox.setAccessToken(
 
 const Step2 = () => {
   const [viewPort, setViewPort] = useState(null);
+  const [address, setAdress] = useState("");
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
@@ -30,13 +31,15 @@ const Step2 = () => {
   }, [isFocused]);
 
   const handleSubmit = () => {
-    if (viewPort) {
-      dispatch(setFormData({ lat: viewPort?.lat, lng: viewPort?.lng }));
+    if (viewPort && address) {
+      dispatch(
+        setFormData({ lat: viewPort?.lat, lng: viewPort?.lng, address })
+      );
       router.push("/customers/selling/step3");
     } else {
       Alert.alert(
-        "Can't Find exact location",
-        "Please use marker to pin your exact location"
+        "Can't Find location or address",
+        "Please use marker to pin your exact location and type your address below"
       );
     }
   };
@@ -53,7 +56,7 @@ const Step2 = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Drop pin at exact location 📍</Text>
-      <View style={{ height: "80%", width: "100%" }}>
+      <View style={{ height: "70%", width: "100%" }}>
         <MapView
           style={styles.map}
           setAccessToken="pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w"
@@ -83,6 +86,15 @@ const Step2 = () => {
           </PointAnnotation>
           <UserLocation />
         </MapView>
+      </View>
+      <View>
+        <Text style={styles.labelTxt}>Enter your address</Text>
+        <TextInput
+          style={styles.addressInput}
+          placeholder="Enter your address"
+          value={address}
+          onChangeText={setAdress}
+        />
       </View>
       <SellingFromStepsBtn
         bPath="/customers/selling/form"
@@ -137,5 +149,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginBottom: 10,
+  },
+  labelTxt: {
+    fontFamily: "Montserrat-Medium",
+    fontSize: 17,
+    marginTop: 20,
+    marginBottom: 12,
+  },
+  addressInput: {
+    padding: 15,
+    fontFamily: "Montserrat-Medium",
+    fontSize: 16,
+    backgroundColor: COLORS.lightGreyBg,
+    borderRadius: 4,
+    width: "100%",
   },
 });
