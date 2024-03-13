@@ -52,3 +52,13 @@ export const isPointInsidePolygon = (point, polygon) => {
   }
   return inside;
 };
+
+export const filterTodaySchedules = (schedules) => {
+  const today = new Date();
+  const todayDate = today.toLocaleDateString();
+  const todaySchedules = schedules.filter((schedule) => {
+    return schedule?.date === todayDate;
+  });
+
+  return todaySchedules;
+};

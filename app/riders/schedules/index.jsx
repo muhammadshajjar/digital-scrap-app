@@ -5,6 +5,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toggle from "react-native-toggle-element";
@@ -12,18 +13,34 @@ import { COLORS } from "../../../constants/Colors";
 import { Link, router } from "expo-router";
 import RiderScheduleCard from "../../../components/ui/RiderScheduleCard";
 import { RIDERSSCHEDULESDATA } from "../../../lib/dummyData";
+import { getAllSchedules } from "../../../lib/firebase";
+import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { filterTodaySchedules } from "../../../helper/utilityFunctions";
 
 // const data = Array.from({ length: 6 }, (_, index) => index + 1);
 
 const Home = () => {
   const [toggleValue, setToggleValue] = useState(false);
+  const currentUser = useSelector((state) => state.user.personalInfo);
 
   const toggleSwitch = (val) => {
     setToggleValue((previousState) => !previousState);
     if (val) {
-      console.log("ONLINE");
     }
   };
+  const scheduleData = {
+    type: "rider",
+    id: currentUser?.uid,
+  };
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["schedule", currentUser?.uid],
+    queryFn: () => getAllSchedules(scheduleData),
+  });
+
+  if (isError) {
+    Alert.alert("Error", error.message);
+  }
   return (
     <>
       <SafeAreaView edges={["top"]} style={styles.header}>
@@ -49,12 +66,24 @@ const Home = () => {
           </Link>
         </View>
         <View style={{ height: "73%" }}>
-          <FlatList
-            data={RIDERSSCHEDULESDATA}
-            renderItem={({ item }) => <RiderScheduleCard data={item} />}
-            keyExtractor={(item, index) => index.toString()}
-            showsVerticalScrollIndicator={false}
-          />
+          {data && (
+            <FlatList
+              data={filterTodaySchedules(data)}
+              renderItem={({ item }) => <RiderScheduleCard data={item} />}
+              keyExtractor={(item, index) => index.toString()}
+              showsVerticalScrollIndicator={false}
+              ListEmptyComponent={
+                <Text style={styles.feedBackTxt}>No Schedule Found!</Text>
+              }
+            />
+          )}
+          {isPending && (
+            <ActivityIndicator
+              style={{ marginTop: 20 }}
+              size="small"
+              color={COLORS.primaryGreen}
+            />
+          )}
         </View>
 
         <TouchableOpacity
@@ -146,5 +175,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Montserrat-SemiBold",
     textAlign: "center",
+  },
+  feedBackTxt: {
+    textAlign: "center",
+    marginTop: 20,
+    color: "red",
   },
 });

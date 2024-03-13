@@ -2,33 +2,31 @@ import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
 import { COLORS } from "../../constants/Colors";
 
-const RiderScheduleCard = ({ data ,settings}) => {
+const RiderScheduleCard = ({ data, settings }) => {
   const acceptBtnHandler = () => {
     console.log("acceptBtnHandler");
   };
   const requestBtnHandler = () => {
     console.log("requestBtnHandler");
   };
-
+  
   return (
     <View style={styles.card}>
       <View style={styles.flexRow}>
         <Text style={styles.title}>Pickup ID:</Text>
-        <Text style={styles.desc}>{data?.id}</Text>
+        <Text style={styles.desc}>{data?.pickUpId}</Text>
       </View>
       <View style={styles.flexBetween}>
         <View style={styles.flexRow}>
           <Text style={styles.title}>By:</Text>
-          <Text style={styles.desc}>{data?.by}</Text>
+          <Text style={styles.desc}>{data?.customerId.slice(0,8)}</Text>
         </View>
         <View style={styles.flexRow}>
           <Text style={styles.title}>At:</Text>
-          <Text style={styles.desc}>{data?.at}</Text>
+          <Text style={styles.desc}>{`${data?.date} - ${data?.time}`}</Text>
         </View>
       </View>
-      <Text style={styles.addressTxt}>
-      {data?.address}
-      </Text>
+      <Text style={styles.addressTxt}>{data?.address}</Text>
       {settings && (
         <View style={styles.actions}>
           <TouchableOpacity

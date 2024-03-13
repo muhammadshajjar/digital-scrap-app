@@ -107,26 +107,26 @@ const Step3 = () => {
   };
 
   const handleSubmit = async () => {
-    if (!image) {
-      Alert.alert(
-        "Error",
-        "Please select or take picture of your scrap material to proceed"
-      );
-      return false;
-    } else {
-      dispatch(setFormData({ downloadURL }));
-      const pickUpdata = {
-        ...formData,
-        downloadURL,
-        customerId: currentUser?.uid,
-      };
-      try {
-        await setPickupSchedule(pickUpdata);
-        router.push("/customers/selling/final");
-      } catch (e) {
-        Alert.alert("Error", e.message);
-      }
+    // if (!image) {
+    //   Alert.alert(
+    //     "Error",
+    //     "Please select or take picture of your scrap material to proceed"
+    //   );
+    //   return false;
+    // } else {
+    dispatch(setFormData({ downloadURL }));
+    const pickUpdata = {
+      ...formData,
+      downloadURL,
+      customerId: currentUser?.uid,
+    };
+    try {
+      await setPickupSchedule(pickUpdata);
+      router.push("/customers/selling/final");
+    } catch (e) {
+      Alert.alert("Error", e.message);
     }
+    // }
   };
 
   return (
