@@ -39,7 +39,7 @@ const Step2 = () => {
       reverseGeoCoding(lng, lat)
         .then((data) => setAdress(data?.features[0]?.place_name))
         .catch((err) => {
-          Alert.alert(err)
+          Alert.alert(err);
         });
     }
   }, [viewPort]);
@@ -103,7 +103,7 @@ const Step2 = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Drop pin at exact location 📍</Text>
-      <View style={{ height: "70%", width: "100%" }}>
+      <View style={{ height: "63%", width: "100%" }}>
         <MapView style={styles.map}>
           <Camera
             zoomLevel={15}
@@ -111,7 +111,7 @@ const Step2 = () => {
             pitch={60}
             animationMode="flyTo"
             animationDuration={6000}
-            // followUserLocation={true}
+            followUserLocation={true}
           />
 
           <PointAnnotation
@@ -132,12 +132,13 @@ const Step2 = () => {
         </MapView>
       </View>
       <View>
-        <Text style={styles.labelTxt}>Enter your address</Text>
+        <Text style={styles.labelTxt}>Your address</Text>
         <TextInput
           style={styles.addressInput}
           placeholder="Enter your address"
           value={address}
           onChangeText={setAdress}
+          multiline={true}
         />
       </View>
       <SellingFromStepsBtn
@@ -201,11 +202,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   addressInput: {
-    padding: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     fontFamily: "Montserrat-Medium",
     fontSize: 16,
     backgroundColor: COLORS.lightGreyBg,
     borderRadius: 4,
     width: "100%",
+    height: 70,
   },
 });
