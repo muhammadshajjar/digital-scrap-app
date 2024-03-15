@@ -30,7 +30,9 @@ const Step2 = () => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const formData = useSelector((state) => state.selling.formData);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(
+    new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+  );
   const [time, setTime] = useState(new Date());
 
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -40,8 +42,6 @@ const Step2 = () => {
     isFocused && dispatch(changeProgress(1));
   }, [isFocused]);
 
-  console.log(formData);
-
   const {
     control,
     handleSubmit,
@@ -49,14 +49,13 @@ const Step2 = () => {
     setValue,
   } = useForm({
     defaultValues: {
-      date: "",
+      date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
       time: "",
       weight: "",
     },
   });
   const onSubmit = (data) => {
     const { date, time, weight } = data;
-
     const transformedData = {
       date: date.toLocaleDateString(),
       time: time.toLocaleTimeString(),
@@ -140,11 +139,13 @@ const Step2 = () => {
                 <DateTimePicker
                   id="34t34"
                   mode="date"
-                  value={time}
+                  value={date}
                   onChange={dateChangeHandler}
                   display="spinner"
                   themeVariant="light"
-                  minimumDate={new Date()}
+                  minimumDate={
+                    new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+                  }
                 />
               )}
             </>

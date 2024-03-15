@@ -16,12 +16,15 @@ import Mapbox from "@rnmapbox/maps";
 
 import { FontAwesome5 } from "@expo/vector-icons";
 
-Mapbox.setAccessToken(
-  "pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w"
-);
+import { getRiderBasedOnAreaAssigned } from "../../../lib/firebase";
+
+const MAP_BOX_ACCESS_KEY =
+  "pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w";
+
+Mapbox.setAccessToken(MAP_BOX_ACCESS_KEY);
 
 const Step2 = () => {
-  const [viewPort, setViewPort] = useState(null);
+  const [viewPort, setViewPort] = useState({ lng: "73.0288", lat: "33.7156" });
   const [address, setAdress] = useState("");
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -30,37 +33,78 @@ const Step2 = () => {
     isFocused && dispatch(changeProgress(2));
   }, [isFocused]);
 
-  const handleSubmit = () => {
-    if (viewPort && address) {
-      dispatch(
-        setFormData({ lat: viewPort?.lat, lng: viewPort?.lng, address })
-      );
-      router.push("/customers/selling/step3");
-    } else {
-      Alert.alert(
-        "Can't Find location or address",
-        "Please use marker to pin your exact location and type your address below"
-      );
+  useEffect(() => {
+    if (viewPort) {
+      const { lng, lat } = viewPort;
+      reverseGeoCoding(lng, lat)
+        .then((data) => setAdress(data?.features[0]?.place_name))
+        .catch((err) => {
+          Alert.alert(err)
+        });
+    }
+  }, [viewPort]);
+
+  const handleSubmit = async () => {
+    try {
+      if (viewPort && address) {
+        const result = await getRiderBasedOnAreaAssigned([
+          viewPort?.lng,
+          viewPort?.lat,
+        ]);
+
+        if (result) {
+          dispatch(
+            setFormData({
+              lat: viewPort?.lat,
+              lng: viewPort?.lng,
+              address,
+              riderId: result?.id,
+            })
+          );
+          router.push("/customers/selling/step3");
+        } else {
+          Alert.alert(
+            "Sorry 😔",
+            "We are currently not available at your area"
+          );
+        }
+      } else {
+        Alert.alert(
+          "Can't Find location or address",
+          "Please use marker to pin your exact location and type your address below"
+        );
+      }
+    } catch (e) {
+      console.log(e.message);
     }
   };
 
-  const dragMarkerHandler = (e) => {
-    console.log(e?.geometry?.coordinates);
-    const [lat, lng] = e?.geometry?.coordinates;
+  const dragMarkerHandler = async (e) => {
+    const [lng, lat] = e?.geometry?.coordinates;
     setViewPort({
-      lat,
       lng,
+      lat,
     });
+  };
+
+  const reverseGeoCoding = async (lng, lat) => {
+    try {
+      const query = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAP_BOX_ACCESS_KEY}`,
+        { method: "GET" }
+      );
+      const json = await query.json();
+      return json;
+    } catch (e) {
+      Alert.alert("Error", e.message);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Drop pin at exact location 📍</Text>
       <View style={{ height: "70%", width: "100%" }}>
-        <MapView
-          style={styles.map}
-          setAccessToken="pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w"
-        >
+        <MapView style={styles.map}>
           <Camera
             zoomLevel={15}
             centerCoordinate={[73.0288, 33.7156]}
