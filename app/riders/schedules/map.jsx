@@ -12,6 +12,11 @@ import Mapbox from "@rnmapbox/maps";
 import ColorfulCard from "@freakycoder/react-native-colorful-card";
 import { COLORS } from "../../../constants/Colors";
 
+import { getAllSchedules } from "../../../lib/firebase";
+import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { filterTodaySchedules } from "../../../helper/utilityFunctions";
+
 Mapbox.setAccessToken(
   "pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w"
 );
@@ -22,6 +27,25 @@ const Map = () => {
   const [duration, setDuration] = useState(null);
   const [loading, setLoading] = useState(true);
   const [gettingLocation, setGettingLocation] = useState(true);
+  const currentUser = useSelector((state) => state.user.personalInfo);
+
+  const scheduleData = {
+    type: "rider",
+    id: currentUser?.uid,
+  };
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["schedule", currentUser?.uid],
+    queryFn: () => getAllSchedules(scheduleData),
+  });
+
+  const todaySchedule = filterTodaySchedules(data);
+
+  const coords = todaySchedule.map((schedule) => [
+    schedule?.lat,
+    schedule?.lng,
+  ]);
+  const formattedCoords = coords.map((coord) => coord.join(",")).join(";");
+
 
   useEffect(() => {
     (async () => {
@@ -62,13 +86,11 @@ const Map = () => {
     return routerFeature;
   };
 
-  const createRouerLine = async () => {
-    const endCoords = [72.98734512616898, 33.68404884848644];
-    // const endCoords1 = [72.98054988435814, 33.69909453748939];
+  const createRouerLine = async (formattedCoords) => {
 
     try {
       const query = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${location[0]},${location[1]};${endCoords[0]},${endCoords[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w`,
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${location[0]},${location[1]};${formattedCoords}?steps=true&geometries=geojson&access_token=pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w`,
         { method: "GET" }
       );
       const json = await query.json();
@@ -119,7 +141,7 @@ const Map = () => {
           // styleURL="mapbox://styles/mapbox/navigation-night-v1"
           rotateEnabled={true}
           onDidFinishLoadingMap={async () => {
-            await createRouerLine();
+            await createRouerLine(formattedCoords);
           }}
         >
           <Camera
