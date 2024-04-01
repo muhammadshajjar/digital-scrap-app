@@ -17,6 +17,7 @@ import Mapbox from "@rnmapbox/maps";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 import { getRiderBasedOnAreaAssigned } from "../../../lib/firebase";
+import * as Location from "expo-location";
 
 const MAP_BOX_ACCESS_KEY =
   "pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w";
@@ -28,6 +29,21 @@ const Step2 = () => {
   const [address, setAdress] = useState("");
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+
+  const [location, setLocation] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation([location?.coords?.longitude, location?.coords?.latitude]);
+    })();
+  }, []);
 
   useEffect(() => {
     isFocused && dispatch(changeProgress(2));
@@ -105,29 +121,32 @@ const Step2 = () => {
       <Text style={styles.title}>Drop pin at exact location 📍</Text>
       <View style={{ height: "63%", width: "100%" }}>
         <MapView style={styles.map}>
-          <Camera
-            zoomLevel={15}
-            centerCoordinate={[73.0288, 33.7156]}
-            pitch={60}
-            animationMode="flyTo"
-            animationDuration={6000}
-            followUserLocation={true}
-          />
+          <>
+            <Camera
+              zoomLevel={15}
+              // centerCoordinate={location ?? [73.0288, 33.7156]}
+              centerCoordinate={[73.0288, 33.7156]}
+              pitch={60}
+              animationMode="flyTo"
+              animationDuration={6000}
+              // followUserLocation={true}
+            />
 
-          <PointAnnotation
-            id="marker"
-            coordinate={[73.0288, 33.7156]}
-            draggable={true}
-            onDragEnd={dragMarkerHandler}
-          >
-            <View>
-              <FontAwesome5
-                name="map-marker-alt"
-                size={30}
-                color={COLORS.primaryGreen}
-              />
-            </View>
-          </PointAnnotation>
+            <PointAnnotation
+              id="marker"
+              coordinate={[73.0288, 33.7156]}
+              draggable={true}
+              onDragEnd={dragMarkerHandler}
+            >
+              <View>
+                <FontAwesome5
+                  name="map-marker-alt"
+                  size={30}
+                  color={COLORS.primaryGreen}
+                />
+              </View>
+            </PointAnnotation>
+          </>
           <UserLocation />
         </MapView>
       </View>

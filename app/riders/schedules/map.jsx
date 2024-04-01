@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import * as Location from "expo-location";
 import {
@@ -18,27 +18,34 @@ Mapbox.setAccessToken(
 const Map = () => {
   const [directionRoute, setDirectionRoute] = useState(null);
   const [location, setLocation] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [distance, setDistance] = useState(null);
   const [duration, setDuration] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [gettingLocation, setGettingLocation] = useState(true);
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
+      console.log("getting location...");
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          Alert.alert("Permission to access location was denied");
+          return;
+        }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation([location?.coords?.latitude, location?.coords?.longitude]);
+        let location = await Location.getCurrentPositionAsync({});
+        console.log("Done!");
+
+        setLocation([location?.coords?.longitude, location?.coords?.latitude]);
+        setGettingLocation(false);
+      } catch (err) {
+        Alert.alert("Unable to get your starting location 😔 ");
+        setGettingLocation(false);
+      }
     })();
   }, []);
 
-  // console.log(location);
   const makeRouterFeature = (coords) => {
-    console.log(coords);
     let routerFeature = {
       type: "FeatureCollection",
       features: [
@@ -55,15 +62,13 @@ const Map = () => {
     return routerFeature;
   };
 
-  const createRouerLine = async (coords) => {
-    // const startCoords = `${coords[0]},${coords[1]}`;
-    const startCoords = [73.0288, 33.7156];
+  const createRouerLine = async () => {
     const endCoords = [72.98734512616898, 33.68404884848644];
     // const endCoords1 = [72.98054988435814, 33.69909453748939];
 
     try {
       const query = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${startCoords[0]},${startCoords[1]};${endCoords[0]},${endCoords[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w`,
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${location[0]},${location[1]};${endCoords[0]},${endCoords[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w`,
         { method: "GET" }
       );
       const json = await query.json();
@@ -86,12 +91,7 @@ const Map = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.primaryBg }}>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={COLORS.primaryGreen} />
-          <Text style={styles.feedback}>Generating Optimal Pickup Route!</Text>
-        </View>
-      ) : (
+      {!loading && (
         <View style={styles.card}>
           <ColorfulCard
             title="Duration"
@@ -104,40 +104,50 @@ const Map = () => {
           />
         </View>
       )}
-      <MapView
-        style={styles.map}
-        zoomEnabled={true}
-        // styleURL="mapbox://styles/mapbox/navigation-night-v1"
-        rotateEnabled={true}
-        onDidFinishLoadingMap={async () => {
-          await createRouerLine(location);
-        }}
-      >
-        <Camera
-          zoomLevel={15}
-          centerCoordinate={[73.0288, 33.7156]}
-          pitch={60}
-          animationMode="flyTo"
-          animationDuration={6000}
-          // followUserLocation={true}
-        />
-        {directionRoute && (
-          <ShapeSource id="line1" shape={directionRoute}>
-            <LineLayer
-              id="routerLine01"
-              style={{
-                lineColor: "#42A554",
-                lineWidth: 5,
-              }}
-            />
-          </ShapeSource>
-        )}
-        <UserLocation
-          animated={true}
-          androidRenderMode="gps"
-          showsUserHeadingIndicator={true}
-        />
-      </MapView>
+      {gettingLocation && (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+          <Text style={styles.feedback}>Generating Optimal Pickup Route!</Text>
+        </View>
+      )}
+      {location && (
+        <MapView
+          style={styles.map}
+          zoomEnabled={true}
+          // styleURL="mapbox://styles/mapbox/navigation-night-v1"
+          rotateEnabled={true}
+          onDidFinishLoadingMap={async () => {
+            await createRouerLine();
+          }}
+        >
+          <Camera
+            zoomLevel={15}
+            centerCoordinate={location || [73.0288, 33.7156]}
+            pitch={60}
+            animationMode="flyTo"
+            animationDuration={6000}
+            // followUserLocation={true}
+          />
+          {directionRoute && (
+            <ShapeSource id="line1" shape={directionRoute}>
+              <LineLayer
+                id="routerLine01"
+                style={{
+                  lineColor: "#42A554",
+                  lineWidth: 5,
+                }}
+              />
+            </ShapeSource>
+          )}
+          <UserLocation
+            animated={true}
+            androidRenderMode="gps"
+            showsUserHeadingIndicator={true}
+          />
+        </MapView>
+      )}
     </View>
   );
 };
