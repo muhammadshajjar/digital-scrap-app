@@ -41,11 +41,10 @@ const Map = () => {
   const todaySchedule = filterTodaySchedules(data);
 
   const coords = todaySchedule.map((schedule) => [
-    schedule?.lat,
     schedule?.lng,
+    schedule?.lat,
   ]);
   const formattedCoords = coords.map((coord) => coord.join(",")).join(";");
-
 
   useEffect(() => {
     (async () => {
@@ -87,7 +86,6 @@ const Map = () => {
   };
 
   const createRouerLine = async (formattedCoords) => {
-
     try {
       const query = await fetch(
         `https://api.mapbox.com/directions/v5/mapbox/driving/${location[0]},${location[1]};${formattedCoords}?steps=true&geometries=geojson&access_token=pk.eyJ1Ijoic2hhamphcjk5IiwiYSI6ImNsdDdjYTgxcDAwcTMyaW5jM2EwbWlnMWMifQ.7kv6v0DaL8tylFc71BkB3w`,

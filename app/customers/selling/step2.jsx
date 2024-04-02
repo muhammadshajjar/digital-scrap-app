@@ -25,7 +25,7 @@ const MAP_BOX_ACCESS_KEY =
 Mapbox.setAccessToken(MAP_BOX_ACCESS_KEY);
 
 const Step2 = () => {
-  const [viewPort, setViewPort] = useState({ lng: "73.0288", lat: "33.7156" });
+  const [viewPort, setViewPort] = useState({ lat: "33.7156", lng: "73.0288" });
   const [address, setAdress] = useState("");
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
@@ -52,7 +52,7 @@ const Step2 = () => {
   useEffect(() => {
     if (viewPort) {
       const { lng, lat } = viewPort;
-      reverseGeoCoding(lng, lat)
+      reverseGeoCoding(lng, lat) //first take lng and then lat
         .then((data) => setAdress(data?.features[0]?.place_name))
         .catch((err) => {
           Alert.alert(err);
@@ -96,10 +96,13 @@ const Step2 = () => {
   };
 
   const dragMarkerHandler = async (e) => {
+    console.log(e?.geometry?.coordinates);
     const [lng, lat] = e?.geometry?.coordinates;
+
+    console.log(lat, lng);
     setViewPort({
-      lng,
       lat,
+      lng,
     });
   };
 
@@ -125,7 +128,7 @@ const Step2 = () => {
             <Camera
               zoomLevel={15}
               // centerCoordinate={location ?? [73.0288, 33.7156]}
-              centerCoordinate={[73.0288, 33.7156]}
+              centerCoordinate={[73.0288, 33.7156]} //first lng and then lat
               pitch={60}
               animationMode="flyTo"
               animationDuration={6000}
