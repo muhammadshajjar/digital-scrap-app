@@ -28,7 +28,7 @@ const Blogs = () => {
         <FlatList
           data={data}
           renderItem={({ item }) => (
-            <BlogCard blogPost={item} forRider={true} />
+            <BlogCard blogPost={item} forCustomer={true} />
           )}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}

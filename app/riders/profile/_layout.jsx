@@ -7,6 +7,10 @@ const ProfileLayout = () => {
       <Stack.Screen name="schedules" options={{ headerTitle: "Schedules" }} />
       <Stack.Screen name="blogs" options={{ headerTitle: "Blogs" }} />
       <Stack.Screen
+        name="blogsdetails"
+        options={{ headerTitle: "Blog Details" }}
+      />
+      <Stack.Screen
         name="smarttrashbin"
         options={{ headerTitle: "Smart Trashbin" }}
       />

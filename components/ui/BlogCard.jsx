@@ -5,11 +5,19 @@ import { Image } from "expo-image";
 import { Link } from "expo-router";
 import { COLORS } from "../../constants/Colors";
 
-const BlogCard = ({ blogPost }) => {
+const BlogCard = ({ blogPost, forRider, forCustomer }) => {
   const transformedParamsData = {
     ...blogPost,
     picture: blogPost?.thumbnail[0]?.url,
   };
+
+  const pathName = forRider
+    ? `/riders/profile/blogsdetails`
+    : forCustomer
+    ? `/customers/profile/blogsdetails`
+    : `/customers/blogs/${blogPost?.uid}`;
+
+  console.log(pathName);
 
   return (
     <View style={styles.card}>
@@ -21,7 +29,7 @@ const BlogCard = ({ blogPost }) => {
           <Link
             style={styles.readmoreTxt}
             href={{
-              pathname: `/customers/blogs/${blogPost?.uid}`,
+              pathname: pathName,
               params: transformedParamsData,
             }}
           >
