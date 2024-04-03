@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Platform,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 
 import { COLORS } from "../../constants/Colors";
@@ -35,6 +36,7 @@ const Chat = () => {
       user: Bot,
     },
   ]);
+  const [loading, setLoading] = useState(true); // State for loading indicator
 
   useEffect(() => {
     // Initialize Dialogflow only if the platform is Android
@@ -46,6 +48,7 @@ const Chat = () => {
         dialogflowConfig.project_id
       );
     }
+    setLoading(false);
   }, []);
 
   const onSend = useCallback((messages = []) => {
@@ -119,14 +122,27 @@ const Chat = () => {
         </TouchableOpacity>
       </View>
       <View style={{ flex: 1, paddingTop: 15 }}>
-        <GiftedChat
-          messages={messages}
-          onSend={(messages) => onSend(messages)}
-          user={{
-            _id: 1,
-          }}
-          renderBubble={renderBubble}
-        />
+        {loading ? (
+          <View style={styles.feedback}>
+            <ActivityIndicator size="small" color={COLORS.primaryGreen} />
+            <Text style={styles.feedbackTxt}>
+              Please hold tight while we fine-tune our Bot for an even smoother
+              experience! 🤖✨
+            </Text>
+          </View>
+        ) : (
+          <GiftedChat
+            messages={messages}
+            onSend={(messages) => onSend(messages)}
+            user={{
+              _id: 1,
+            }}
+            renderBubble={renderBubble}
+            timeTextStyle={{
+              left: { color: "white" },
+            }}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -156,5 +172,13 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     fontSize: 14,
+  },
+  feedback: { flex: 1, justifyContent: "center", alignItems: "center" },
+  feedbackTxt: {
+    fontFamily: "Montserrat-Medium",
+    marginTop: 10,
+    fontSize: 15,
+    paddingHorizontal: 5,
+    textAlign: "center",
   },
 });

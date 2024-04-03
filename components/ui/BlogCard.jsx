@@ -16,9 +16,6 @@ const BlogCard = ({ blogPost, forRider, forCustomer }) => {
     : forCustomer
     ? `/customers/profile/blogsdetails`
     : `/customers/blogs/${blogPost?.uid}`;
-
-  console.log(pathName);
-
   return (
     <View style={styles.card}>
       <Image source={{ uri: blogPost?.thumbnail[0]?.url }} style={styles.img} />
