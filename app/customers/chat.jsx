@@ -1,6 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
 
 import { COLORS } from "../../constants/Colors";
 
@@ -11,6 +17,8 @@ if (Platform.OS === "android") {
 }
 
 import { dialogflowConfig } from "./env";
+import { router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Bot = {
   _id: 4,
@@ -103,40 +111,50 @@ const Chat = () => {
     );
   };
   return (
-    <View
-      style={{ flex: 1, paddingBottom: 100, backgroundColor: COLORS.primaryBg }}
-    >
-      <View
-        style={{
-          backgroundColor: COLORS.primaryGreen,
-          height: 90,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            marginTop: 50,
-            fontFamily: "Montserrat-SemiBold",
-            color: "white",
-            fontSize: 17,
-          }}
-        >
-          AI-Powered ChatBot 🤖
-        </Text>
+    <SafeAreaView edges={["bottom"]} style={styles.container}>
+      <View style={styles.customHeader}>
+        <Text style={styles.headerTxt}>AI-Powered ChatBot 🤖</Text>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Text style={styles.goBackBtn}>Go Back</Text>
+        </TouchableOpacity>
       </View>
-      <GiftedChat
-        messages={messages}
-        onSend={(messages) => onSend(messages)}
-        user={{
-          _id: 1,
-        }}
-        renderBubble={renderBubble}
-      />
-    </View>
+      <View style={{ flex: 1, paddingTop: 15 }}>
+        <GiftedChat
+          messages={messages}
+          onSend={(messages) => onSend(messages)}
+          user={{
+            _id: 1,
+          }}
+          renderBubble={renderBubble}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
 export default Chat;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: COLORS.primaryBg },
+  customHeader: {
+    backgroundColor: COLORS.primaryGreen,
+    height: 90,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-end",
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+  },
+  headerTxt: {
+    fontFamily: "Montserrat-SemiBold",
+    color: "white",
+    fontSize: 17,
+  },
+  goBackBtn: {
+    fontFamily: "Montserrat-Medium",
+    backgroundColor: "white",
+    padding: 5,
+    borderRadius: 5,
+    fontSize: 14,
+  },
+});

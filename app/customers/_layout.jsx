@@ -37,7 +37,6 @@ const CustomerFlowLayout = () => {
             shadowOpacity: 0.39,
             shadowRadius: 8.3,
             elevation: 13,
-            
           },
           headerShown: false,
           tabBarShowLabel: false,
@@ -97,7 +96,7 @@ const CustomerFlowLayout = () => {
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="chat"
         options={{
           tabBarLabel: "Chat",
@@ -112,8 +111,27 @@ const CustomerFlowLayout = () => {
             </View>
           ),
         }}
-      />
+      /> */}
 
+      <Tabs.Screen
+        name="chat"
+        options={({ route }) => ({
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.tabBarButtonIcon}>
+              <Ionicons
+                name="ios-chatbubble-outline"
+                size={24}
+                color={focused ? "#42A554" : "#9DB2CE"}
+              />
+              {focused && <Text style={styles.label}>Chat</Text>}
+            </View>
+          ),
+          tabBarStyle: {
+            display: route.name === "chat" ? "none" : "flex",
+          },
+        })}
+      />
       <Tabs.Screen
         name="profile"
         options={{
