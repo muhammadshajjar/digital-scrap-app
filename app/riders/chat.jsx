@@ -1,14 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import ChatBot from "../../components/ui/ChatBot";
 
 const Chat = () => {
-  return (
-    <View>
-      <Text>chat</Text>
-    </View>
-  )
-}
+  return <ChatBot />;
+};
 
-export default Chat
-
-const styles = StyleSheet.create({})
+export default Chat;

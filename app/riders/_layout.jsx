@@ -53,7 +53,7 @@ const RiderFlowLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="chat"
         options={{
           tabBarLabel: "Chat",
@@ -68,6 +68,25 @@ const RiderFlowLayout = () => {
             </View>
           ),
         }}
+      /> */}
+      <Tabs.Screen
+        name="chat"
+        options={({ route }) => ({
+          tabBarLabel: "Chat",
+          tabBarIcon: ({ focused }) => (
+            <View style={styles.tabBarButtonIcon}>
+              <Ionicons
+                name="ios-chatbubble-outline"
+                size={24}
+                color={focused ? "#42A554" : "#9DB2CE"}
+              />
+              {focused && <Text style={styles.label}>Chat</Text>}
+            </View>
+          ),
+          tabBarStyle: {
+            display: route.name === "chat" ? "none" : "flex",
+          },
+        })}
       />
       <Tabs.Screen
         name="profile"
