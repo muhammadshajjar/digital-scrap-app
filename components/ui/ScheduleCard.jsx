@@ -1,37 +1,45 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { COLORS } from "../../constants/Colors";
 
-const ScheduleCard = () => {
+const ScheduleCard = ({ data }) => {
   return (
     <View style={styles.card}>
       <View style={styles.detailRow}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Pickup ID:</Text>
         </View>
-        <Text style={styles.txt}>adkj2kfdf23311</Text>
+        <Text style={styles.txt}>{data?.pickUpId}</Text>
       </View>
       <View style={styles.detailRow}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Date/Time:</Text>
         </View>
-        <Text style={styles.txt}>5/1/2023 - 12:00 am</Text>
+        <Text style={styles.txt}> {`${data?.date} - ${data?.time}`}</Text>
       </View>
       <View style={styles.detailRow}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Status:</Text>
         </View>
-        <Text style={styles.txt}>Pending</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Rider Request:</Text>
-        </View>
-        <Text style={styles.txt}>Open</Text>
+        <Text style={styles.txt}>
+          {data?.riderId ? "Scheduled" : "Pending"}
+        </Text>
       </View>
       <TouchableOpacity
         style={styles.buttonStyle}
-        onPress={() => console.log("Trakcing...")}
+        onPress={() =>
+          Alert.alert(
+            "Track Pickup Feature Coming Soon! ",
+            "We're actively working on our track pickup feature to make your experience even better. Stay tuned for updates as we strive to enhance your journey! 🚀"
+          )
+        }
       >
         <Text style={styles.buttonText}>Track Pickup</Text>
       </TouchableOpacity>
@@ -52,6 +60,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     // For Android
     elevation: 3,
+    marginBottom: 10,
   },
   titleContainer: {
     width: 140,
@@ -74,7 +83,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: COLORS.primaryGreen,
     borderRadius: 10,
-    marginTop:8,
+    marginTop: 8,
   },
   buttonText: {
     fontFamily: "Montserrat-Medium",
