@@ -6,19 +6,18 @@ import {
   FlatList,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toggle from "react-native-toggle-element";
 import { COLORS } from "../../../constants/Colors";
 import { Link, router } from "expo-router";
 import RiderScheduleCard from "../../../components/ui/RiderScheduleCard";
-import { RIDERSSCHEDULESDATA } from "../../../lib/dummyData";
 import { getAllSchedules } from "../../../lib/firebase";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { filterTodaySchedules } from "../../../helper/utilityFunctions";
 
-// const data = Array.from({ length: 6 }, (_, index) => index + 1);
 
 const Home = () => {
   const [toggleValue, setToggleValue] = useState(false);
@@ -47,7 +46,7 @@ const Home = () => {
         <Toggle
           value={toggleValue}
           onPress={toggleSwitch}
-          leftTitle={<Text style={styles.labelTxt}>Offline</Text>} // Increase font size for Offline
+          leftTitle={<Text style={styles.labelTxt}>Offline</Text>}
           rightTitle={<Text style={styles.labelTxt}>Online</Text>}
           trackBarStyle={{
             backgroundColor: "white",
