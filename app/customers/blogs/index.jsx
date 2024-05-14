@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 
 import { getAllBlogs } from "../../../lib/firebase";
 
@@ -13,17 +20,23 @@ const Blogs = () => {
   });
 
   if (isPending) {
-    return <Text>Loading...</Text>;
+    return (
+      <ActivityIndicator
+        style={{ marginTop: 20 }}
+        size="small"
+        color={COLORS.primaryGreen}
+      />
+    );
   }
 
   if (isError) {
-    return <Text>Error: {error.message}</Text>;
+    Alert.alert("Oops😬", `${error.message}`);
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>The Latest From Our Publications 📚</Text>
-      <View style={{height:"78%"}}>
+      <View style={{ height: "78%" }}>
         <FlatList
           data={data}
           renderItem={({ item }) => <BlogCard blogPost={item} />}

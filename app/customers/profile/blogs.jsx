@@ -1,4 +1,10 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 
 import { getAllBlogs } from "../../../lib/firebase";
 
@@ -14,11 +20,17 @@ const Blogs = () => {
   });
 
   if (isPending) {
-    return <Text>Loading...</Text>;
+    return (
+      <ActivityIndicator
+        style={{ marginTop: 20 }}
+        size="small"
+        color={COLORS.primaryGreen}
+      />
+    );
   }
 
   if (isError) {
-    return <Text>Error: {error.message}</Text>;
+    Alert.alert("Oops😬", `${error.message}`);
   }
 
   return (
