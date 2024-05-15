@@ -18,7 +18,6 @@ import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { filterTodaySchedules } from "../../../helper/utilityFunctions";
 
-
 const Home = () => {
   const [toggleValue, setToggleValue] = useState(false);
   const currentUser = useSelector((state) => state.user.personalInfo);
@@ -40,6 +39,19 @@ const Home = () => {
   if (isError) {
     Alert.alert("Error", error.message);
   }
+
+  let todaysSchedules;
+  if (data) {
+    todaysSchedules = filterTodaySchedules(data);
+  }
+
+  const lanunchRouteMapHandler = () => {
+    if (todaysSchedules.length > 0) {
+      router.push("/riders/schedules/map");
+    } else {
+      Alert.alert("Oops😬", "No Schedules for today");
+    }
+  };
   return (
     <>
       <SafeAreaView edges={["top"]} style={styles.header}>
@@ -67,7 +79,7 @@ const Home = () => {
         <View style={{ height: "73%" }}>
           {data && (
             <FlatList
-              data={filterTodaySchedules(data)}
+              data={todaysSchedules}
               renderItem={({ item }) => <RiderScheduleCard data={item} />}
               keyExtractor={(item, index) => index.toString()}
               showsVerticalScrollIndicator={false}
@@ -87,7 +99,7 @@ const Home = () => {
 
         <TouchableOpacity
           style={styles.mapBtn}
-          onPress={() => router.push("/riders/schedules/map")}
+          onPress={lanunchRouteMapHandler}
         >
           <Text style={styles.mapBtnTxt}>Map</Text>
         </TouchableOpacity>
